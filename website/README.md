@@ -18,7 +18,7 @@ python3 -m http.server 4173 -d website
 
 字体基线是本地 Google Sans Flex / Google Sans Text / Google Sans / Noto Sans SC，字体说明见 [`assets/fonts/README.md`](assets/fonts/README.md)。
 
-页面的“从 0 到高级”学习路线对应仓库中的 [`docs/harness-from-zero-to-advanced.zh-CN.md`](../docs/harness-from-zero-to-advanced.zh-CN.md)。它将用户提供的 36 页 Harness 入门教程整理为可执行的学习路径，并补充独立验收、证据契约、跨状态和真实宿主边界。
+页面的“从 0 到高级”学习路线已经迁移到独立的 [Guide 文档站](https://huiyonghkw.github.io/hekouwang-harness-check-skill/guide/index.html?lang=zh)。它将用户提供的 36 页 Harness 入门教程整理为可执行的学习路径，并补充独立验收、证据契约、跨状态和真实宿主边界。
 
 `assets/harness-doctor-run.gif` 是一次真实的 Harness Doctor 终端运行录屏，页面使用懒加载展示，服务于产品演示；它不是质量证明本身，完整证据仍以 JSON Scorecard 和目标仓库的真实退出码为准。
 

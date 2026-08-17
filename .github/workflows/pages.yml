@@ -34,7 +34,6 @@ jobs:
           test -s website/guide/assets/guide.css
           test -s website/guide/assets/guide.js
           test -s website/data/demo-scorecard.json
-          test -s docs/harness-from-zero-to-advanced.zh-CN.md
           node --check website/assets/app.js
           node --check website/guide/assets/guide.js
           python3 - <<'PY'

@@ -62,8 +62,8 @@ jobs:
 
           site = Path("website/assets/site.css").read_text()
           guide = Path("website/guide/assets/guide.css").read_text()
-          assert ".scan-lines .check, .scan-lines .partial" in site
-          assert ".check, .partial" not in site
+          assert ".scan-lines .scan-check, .scan-lines .scan-partial" in site
+          assert ".partial" not in site
           assert "font-weight:500 700" not in guide
           assert "font-weight:400 900" not in guide
           assert '--display:"Google Sans","Google Sans Flex"' in guide

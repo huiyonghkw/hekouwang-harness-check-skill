@@ -16,11 +16,12 @@
 - 产品页展示名调整为 `hekouwang Harness Doctor`，简称 `Harness Doctor`：用品牌化的“体检/诊断/复查”叙事突出与运行时、普通审计工具的边界；仓库名与 Skill 名保持不变。
 - 优化产品页首屏：中文标题按语义固定为三行，`Harness` 使用明确的 Google Sans 粗体字重，并加入绿色—紫色的浅层渐变背景。
 - 新增 `harness_score.py --format terminal --live --color`：真实执行验证器时显示动态进度，完成后用颜色区分 `PASS`、`PARTIAL`、`BLOCKED`、分数、置信度和宿主 `unknown`；JSON/Markdown 输出保持无 ANSI 污染。
-- 新增 [`docs/harness-from-zero-to-advanced.zh-CN.md`](docs/harness-from-zero-to-advanced.zh-CN.md)：基于 36 页 Harness 入门教程整理从 `Agent = Model + Harness`、Guides/Sensors、`CLAUDE.md`、Hook、Subagent、Evaluator、Context Reset、Sprint Contract 到失败台账的完整学习路线，并补充独立验收层的证据、状态、宿主和硬门槛。
+- 将基于 36 页 Harness 入门教程整理的中文学习路线迁移至独立 `website/guide/index.html` Guide 文档站，覆盖从 `Agent = Model + Harness`、Guides/Sensors、`CLAUDE.md`、Hook、Subagent、Evaluator、Context Reset、Sprint Contract 到失败台账，并补充独立验收层的证据、状态、宿主和硬门槛。
 - 产品页新增“从 0 到可验收”学习路线和真实 `Ghostty.gif` 运行录屏；GIF 只作为动态入口，完整结果仍由 JSON Scorecard、真实退出码和人工/宿主边界共同决定。
 - 新增 `website/guide/index.html` 独立 Guide 文档站：采用 Terminal Kit 同类的粘性报头、左侧章节导航、阅读进度、代码块、表格、成熟度路线和真实运行证据；产品首页与完整教程分层呈现。
 - 精简产品首页：移除占据首屏下方空间的“文档地图”卡片区，并在顶部导航新增 `Guide / 文档` 入口，直接进入独立教程页。
 - 修复产品页视觉回归：纠正 Guide 标题的静态字体字重声明，统一英文标题使用真实可变 `Google Sans`；隔离首页摘要的 `.partial` 样式，修复 Scorecard 部分维度按钮塌缩后造成的文字、分数与进度条重叠，并加入 CI 防回归检查。
+- 进一步移除 Scorecard 维度按钮对通用 `partial` class 的依赖，改用 `dimension-state-*` 和 `dimension-status-*` 专用状态名，避免跨组件样式碰撞。
 
 ## 0.1.0 — 2026-08-17
 

@@ -187,9 +187,9 @@ p { color: var(--ink-2); }
 .scan-lines { display: grid; gap: 8px; padding-top: 17px; }
 .scan-lines > span { display: flex; align-items: center; gap: 8px; color: var(--ink-2); font: 10px/1.3 var(--mono); }
 .scan-lines em { margin-left: auto; color: var(--muted); font-style: normal; }
-.scan-lines .check, .scan-lines .partial { width: 17px; height: 17px; display: inline-grid; place-items: center; flex: 0 0 auto; border-radius: 50%; font-style: normal; }
-.check { color: var(--green-deep); background: rgba(0, 168, 132, .12); }
-.scan-lines .partial { color: var(--amber); background: rgba(184, 121, 34, .12); }
+.scan-lines .scan-check, .scan-lines .scan-partial { width: 17px; height: 17px; display: inline-grid; place-items: center; flex: 0 0 auto; border-radius: 50%; font-style: normal; }
+.scan-lines .scan-check { color: var(--green-deep); background: rgba(0, 168, 132, .12); }
+.scan-lines .scan-partial { color: var(--amber); background: rgba(184, 121, 34, .12); }
 .floating-chip { position: absolute; z-index: 3; display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border: 1px solid var(--line-dark); border-radius: 7px; box-shadow: var(--shadow); background: rgba(255, 255, 255, .93); font-family: var(--mono); }
 .floating-chip span { color: var(--purple); font-size: 9px; letter-spacing: .14em; }
 .floating-chip b { color: var(--ink-2); font-size: 10px; font-weight: 600; }
@@ -261,11 +261,11 @@ p { color: var(--ink-2); }
 .dimension-item.selected { border-color: rgba(101, 80, 214, .3); background: rgba(101, 80, 214, .06); }
 .dimension-name { display: flex; align-items: center; min-width: 0; gap: 7px; overflow: hidden; color: var(--ink-2); font-size: 11px; white-space: nowrap; text-overflow: ellipsis; }
 .dimension-status { width: 6px; height: 6px; flex: 0 0 auto; border-radius: 50%; background: var(--green); }
-.dimension-status.partial { background: var(--amber); }
-.dimension-status.fail { background: var(--red); }
+.dimension-status-partial { background: var(--amber); }
+.dimension-status-fail { background: var(--red); }
 .dimension-meter { grid-column: 1 / 2; height: 3px; align-self: center; overflow: hidden; border-radius: 99px; background: var(--line); }
 .dimension-meter i { display: block; height: 100%; border-radius: inherit; background: var(--green); }
-.dimension-item.partial .dimension-meter i { background: var(--amber); }
+.dimension-item.dimension-state-partial .dimension-meter i { background: var(--amber); }
 .dimension-score { grid-column: 2; grid-row: 1 / span 2; color: var(--ink); font: 11px/1 var(--mono); text-align: right; }
 .evidence-content { margin-top: 20px; }
 .evidence-title { margin: 0 0 11px; color: var(--ink); font-size: 15px; line-height: 1.35; }

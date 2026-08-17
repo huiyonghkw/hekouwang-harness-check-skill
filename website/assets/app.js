@@ -109,8 +109,8 @@
       var pct = item.weight ? Math.round(item.earned / item.weight * 100) : 0;
       var selected = item.id === selectedId ? ' selected' : '';
       var status = statusClass(item.status);
-      return '<button class="dimension-item ' + status + selected + '" type="button" data-dimension="' + escapeHtml(item.id) + '" aria-pressed="' + (item.id === selectedId) + '">' +
-        '<span class="dimension-name"><i class="dimension-status ' + status + '"></i>' + escapeHtml(lang() === 'zh' ? item.name : (item.nameEn || item.name)) + '</span>' +
+      return '<button class="dimension-item dimension-state-' + status + selected + '" type="button" data-dimension="' + escapeHtml(item.id) + '" aria-pressed="' + (item.id === selectedId) + '">' +
+        '<span class="dimension-name"><i class="dimension-status dimension-status-' + status + '"></i>' + escapeHtml(lang() === 'zh' ? item.name : (item.nameEn || item.name)) + '</span>' +
         '<span class="dimension-score">' + item.earned + '/' + item.weight + '</span>' +
         '<span class="dimension-meter"><i style="width:' + pct + '%"></i></span>' +
         '</button>';

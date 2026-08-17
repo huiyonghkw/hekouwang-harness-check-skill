@@ -17,7 +17,7 @@ The Skill is an orchestration layer. It does not copy or replace the target repo
 
 Product name proposal: **hekouwang Harness Doctor**, shortened to **Harness Doctor**. Product page: [hekouwang Harness Doctor — make every Harness provable](https://huiyonghkw.github.io/hekouwang-harness-check-skill/). It includes an interactive scorecard, evidence ledger, host matrix, domain profile, and downloadable JSON demo.
 
-For a beginner-to-advanced introduction, read the [Chinese Harness learning guide](docs/harness-from-zero-to-advanced.zh-CN.md) or open the [Guide site](https://huiyonghkw.github.io/hekouwang-harness-check-skill/guide/). It maps the practical build sequence from `CLAUDE.md` and Skills through Hooks, Subagents, Evaluators, Context Reset, Sprint Contracts, failure ledgers, and independent acceptance evidence.
+For a beginner-to-advanced introduction, open the [Chinese Guide site](https://huiyonghkw.github.io/hekouwang-harness-check-skill/guide/index.html?lang=zh). It maps the practical build sequence from `CLAUDE.md` and Skills through Hooks, Subagents, Evaluators, Context Reset, Sprint Contracts, failure ledgers, and independent acceptance evidence.
 
 ## Harness Scorecard
 
@@ -131,7 +131,7 @@ references/scorecard-schema.json JSON output contract for web/GIF consumers
 references/market-positioning.md Product boundary and DeepSeek comparison
 references/demo-storyboard.md  GIF storyboard and web data contract
 references/profiles/             Domain profiles; content-agent ships first
-docs/harness-from-zero-to-advanced.zh-CN.md  Beginner-to-advanced Harness guide
+website/guide/index.html           Beginner-to-advanced Guide site
 harness_score.py                 Standard-library scorecard CLI
 tests/test_harness_score.py      Strong/weak fixture regression tests
 assets/harness-check-flow.svg    Portable workflow diagram

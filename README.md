@@ -8,7 +8,7 @@
 
 产品展示名暂定为 **hekouwang Harness Doctor**，简称 **Harness Doctor**；产品介绍页：[hekouwang Harness Doctor — 让 Harness 不只会跑，还能被证明](https://huiyonghkw.github.io/hekouwang-harness-check-skill/?lang=zh)。页面内置交互式 Scorecard、宿主矩阵、证据台账和 JSON 下载；本地预览说明见 [`website/README.md`](./website/README.md)。
 
-如果你刚接触 Harness，先读 [`Harness 从 0 到可验收`](./docs/harness-from-zero-to-advanced.zh-CN.md)，也可以直接打开 [Guide 文档站](https://huiyonghkw.github.io/hekouwang-harness-check-skill/guide/?lang=zh)：它把“Agent = Model + Harness”、Guides/Sensors、`CLAUDE.md`、Hook、Subagent、Evaluator、Context Reset、Sprint Contract 和失败台账串成一条从入门到高级的学习路线，并补充如何用证据验收这些组件。
+如果你刚接触 Harness，直接打开 [Guide 文档站](https://huiyonghkw.github.io/hekouwang-harness-check-skill/guide/index.html?lang=zh)：它把“Agent = Model + Harness”、Guides/Sensors、`CLAUDE.md`、Hook、Subagent、Evaluator、Context Reset、Sprint Contract 和失败台账串成一条从入门到高级的学习路线，并补充如何用证据验收这些组件。
 
 本仓库提供的是检查编排层，不捆绑某个具体项目的 `.harness/` 真源。接入项目需要提供自己的 `verify.sh`、契约、正反例和人工验收边界；[hekouwang-content-agent](https://github.com/huiyonghkw/hekouwang-content-agent) 是本 Skill 的首个参考实现。
 
@@ -125,7 +125,7 @@ PDF 教程解决的是“如何搭建 Harness”，本仓库再把它接到“�
 | 中级 | Evaluator、Task Contract、失败台账和 CI | `verify.sh` + 正反例 + 退出码 |
 | 高级 | Context Reset、Sprint Contract、恢复、观测和宿主烟测 | 可复核的 Scorecard 与人工边界 |
 
-完整的中文学习指南见 [`docs/harness-from-zero-to-advanced.zh-CN.md`](./docs/harness-from-zero-to-advanced.zh-CN.md)。它保留原教程的构建顺序，同时明确：配置存在不等于触发、自动化通过不等于人工完成、检查数量不等于质量分。
+完整的中文学习指南见 [Guide 文档站](https://huiyonghkw.github.io/hekouwang-harness-check-skill/guide/index.html?lang=zh)。它保留原教程的构建顺序，同时明确：配置存在不等于触发、自动化通过不等于人工完成、检查数量不等于质量分。
 
 ## 七个核心验收优势
 
