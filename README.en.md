@@ -15,6 +15,33 @@ This is the standalone source repository for the Skill. It selects the right ver
 
 The Skill is an orchestration layer. It does not copy or replace the target repository’s `.harness/` scripts and contracts. The first reference implementation is [hekouwang-content-agent](https://github.com/huiyonghkw/hekouwang-content-agent).
 
+## Harness Scorecard
+
+The repository also ships an evidence-weighted scorecard. It has 12 dimensions, hard caps, confidence, maturity bands, a host matrix, and machine-readable findings. It deliberately treats prose and keywords as weaker than executable checks, contracts, fixtures, and observed exit codes.
+
+```bash
+# Static scan, suitable for a web page or GIF data source
+python3 harness_score.py /path/to/harness \
+  --format json --output ./harness-scorecard.json
+
+# Execute the target verifier before rendering the report
+python3 harness_score.py /path/to/harness \
+  --format markdown --mode working-tree --mode ci
+
+# Add the content-agent domain profile
+python3 harness_score.py /path/to/harness \
+  --profile content-agent --format json
+
+# Compare a new report with an earlier JSON scorecard
+python3 harness_score.py /path/to/harness \
+  --baseline ./before-scorecard.json --format markdown
+```
+
+The score is not a test-count total. A missing safety boundary, negative regression, CI parity, or completion evidence contract activates a hard cap. A configured host is not the same as a real host smoke test; it remains `unknown` until there is explicit evidence.
+
+The product boundary is complementary to [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness): DeepSeek Harness is a plugin-based Agent Runtime, while this Skill is an independent acceptance and evidence layer for DeepSeek, Claude, Codex, Cursor, CodeBuddy, and custom Harness repositories. See [`references/market-positioning.md`](references/market-positioning.md).
+The GIF storyboard and offline JSON fields for a future demo page are in [`references/demo-storyboard.md`](references/demo-storyboard.md).
+
 ## Install into a Harness repository
 
 From the target repository root:
@@ -75,6 +102,13 @@ Do not use `| head`, `|| true`, `--no-verify`, or fixed counts to manufacture a 
 SKILL.md                         Agent instructions and result protocol
 agents/openai.yaml               OpenAI/Codex discovery metadata
 references/check-matrix.md       Scope and count terminology
+references/score-rubric.json     Weighted dimensions, caps, and maturity bands
+references/scorecard-schema.json JSON output contract for web/GIF consumers
+references/market-positioning.md Product boundary and DeepSeek comparison
+references/demo-storyboard.md  GIF storyboard and web data contract
+references/profiles/             Domain profiles; content-agent ships first
+harness_score.py                 Standard-library scorecard CLI
+tests/test_harness_score.py      Strong/weak fixture regression tests
 assets/harness-check-flow.svg    Portable workflow diagram
 README.md                        Chinese documentation
 README.en.md                     English documentation

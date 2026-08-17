@@ -12,6 +12,7 @@
 
 - [它解决什么问题](#它解决什么问题)
 - [能力边界](#能力边界)
+- [Harness Scorecard 打分系统](#harness-scorecard-打分系统)
 - [快速开始](#快速开始)
 - [三种验证模式](#三种验证模式)
 - [完整检查层](#完整检查层)
@@ -54,6 +55,50 @@ Agent 工作流最容易出现的不是“没有测试”，而是测试结果�
 - 判断文章事实、来源、自然度和视觉质量已经合格；
 - 证明真实宿主、浏览器、平台编辑器或 MCP 外部副作用已经验证；
 - 把本地状态、Memory 或一次成功日志变成跨机器的权威数据库。
+
+## Harness Scorecard 打分系统
+
+这是本 Skill 的量化层，不把 `722/165` 这类检查数量当成质量分。评分器使用 12 个维度：规则与路由、验证入口、CI 可复现性、宿主适配、安全执行、证据与完成门、状态与恢复、可观测性、正反例回归、生命周期与漂移、文档可移植性、人工边界。
+
+```bash
+# 只扫描仓库结构，输出适合网页/GIF 的机器数据
+python3 harness_score.py /path/to/harness \
+  --format json --output ./harness-scorecard.json
+
+# 在扫描前真实执行目标仓库的验证入口；模式可以重复
+python3 harness_score.py /path/to/harness \
+  --format markdown \
+  --mode working-tree --mode ci
+
+# 对内容 Agent 叠加领域 Profile（通用分和领域分分别输出）
+python3 harness_score.py /path/to/harness \
+  --profile content-agent --format json
+
+# 对比修复前后的分数和每个维度变化
+python3 harness_score.py /path/to/harness \
+  --baseline ./before-scorecard.json --format markdown
+```
+
+输出同时包含：
+
+- `score.value`：加权成熟度分，不是测试计数；
+- `score.confidence`：静态证据、运行证据和人工/宿主证据的置信度；
+- `score.caps`：缺少安全、反例、CI 或完成证据时的硬上限；
+- `score.decision`：`READY`、`CONDITIONAL` 或 `BLOCKED`；
+- `dimensions`：每个维度的得分、状态、证据强度和仓库相对路径；
+- `hosts`：Claude Code、Cursor、CodeBuddy、Codex 的配置矩阵；没有真实触发证据时保持 `unknown`；
+- `executions`：真实命令、退出码、耗时、动态检查数量和失败标签。
+- `profile`：可插拔的领域评分；当前内置 `content-agent`，不把内容规则硬编码进通用 100 分。领域分还会标注 `evidenceKind` 和独立置信度，规则写进文档不等于运行证据。
+- `comparison`：可选的 baseline 差异，供网页/GIF 展示修复前后的分数变化。
+
+评分器会自动降权只有关键词或文档语义的线索；它们可以帮助发现问题，但不能替代脚本、契约、正反例或运行结果。这条规则是为了防止“README 看起来很完整”被误报成“Harness 已经可靠”。
+
+### 与 DeepSeek Harness 的差异
+
+[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的核心是插件化 Agent Runtime：把模型、工具、会话和 Agent Loop 组合并运行起来。这个 Skill 是独立的验收层：检查任何 Harness 是否具备可复核的规则、权限、CI、恢复、跨宿主和交付证据。两者不是替代关系；一个负责运行，一个负责证明运行边界值得信任。
+
+完整对标与产品差异化方案见 [`references/market-positioning.md`](./references/market-positioning.md)。
+网页和 GIF 的数据字段、分镜与离线展示边界见 [`references/demo-storyboard.md`](./references/demo-storyboard.md)。
 
 ## 快速开始
 

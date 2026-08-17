@@ -26,6 +26,13 @@ jobs:
           test -f CONTRIBUTING.md
           test -f agents/openai.yaml
           test -f references/check-matrix.md
+          test -f references/score-rubric.json
+          test -f references/scorecard-schema.json
+          test -f references/market-positioning.md
+          test -f references/demo-storyboard.md
+          test -f references/profiles/content-agent.json
+          test -f harness_score.py
+          test -f tests/test_harness_score.py
           test -f assets/harness-check-flow.svg
           grep -q '^name: hekouwang-harness-check-skill$' SKILL.md
           grep -q 'working-tree' SKILL.md
@@ -33,6 +40,13 @@ jobs:
           grep -q 'ci' SKILL.md
           grep -q 'hekouwang-harness-check-skill' README.en.md
           python3 -c 'import xml.etree.ElementTree as ET; ET.parse("assets/harness-check-flow.svg")'
+          python3 -c 'import json; json.load(open("references/score-rubric.json")); json.load(open("references/scorecard-schema.json"))'
+
+      - name: Test Harness Scorecard
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tests/test_harness_score.py
 
       - name: Check Markdown links and whitespace
         shell: bash

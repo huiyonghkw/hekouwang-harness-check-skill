@@ -12,6 +12,19 @@
 | `harness-check.sh --local` | 规则真源、薄适配、Skill、四端 Hook、生成物、Memory、治理契约、失败台账、Profile、文档链接 | 结构诊断 | 不是完整正反例回归 |
 | `harness-check.sh --ci` | CI 可用的结构诊断 | 远端最小体检 | 使用 fixture Memory，跳过本机依赖 |
 
+## Scorecard 与检查数量的关系
+
+`harness_score.py` 是独立的量化和证据汇总入口，不复制 `verify.sh` 的断言。它可以先做静态扫描，也可以通过 `--mode` 调用目标仓库的真实验证入口；输出中的 `executions[].governanceCounts` 只记录日志观察到的数量，`score.value` 则由评分规则计算。
+
+```bash
+python3 harness_score.py /path/to/repo \
+  --profile content-agent \
+  --format json --output ./harness-scorecard.json \
+  --mode working-tree --mode ci
+```
+
+建议把 JSON 作为网页、GIF 或 CI artifact 的唯一输入。不要从终端截图中手工抄分，也不要把一次运行的检查数量固化成质量基线。
+
 ## 当前数字的正确表述
 
 Runtime Governance 会在 `test-runtime-governance.sh` 的当前仓库正例中输出检查数量。数量随断言变化，必须区分历史基线和当前结果：
