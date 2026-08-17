@@ -1,5 +1,12 @@
 ---
 name: hekouwang-harness-check-skill
+slug: hekouwang-harness-check-skill
+displayName: hekouwang Harness Check
+version: 1.0.0
+summary: 证据驱动的 Agent Harness 独立验收器：检查本地、暂存区、CI、Hook、治理契约和真实宿主边界。
+tags: [harness, agent, governance, verification, audit]
+license: MIT
+homepage: https://huiyonghkw.github.io/hekouwang-harness-check-skill/
 description: 当用户要求检查、体检、回归、验收、解释或诊断会勇禾口王内容工作流 Harness，或维护、移植、打包、开源这个 Harness 检查器 Skill 时使用。统一调用仓库现有的 verify.sh、harness-check、Runtime Governance、Hook、Task Contract、Safety Gate、Episode、可观测性和失败台账检查，并分别报告本地、暂存区、CI 自动化结果与真实宿主烟测边界。
 ---
 
@@ -19,7 +26,6 @@ description: 当用户要求检查、体检、回归、验收、解释或诊断�
 | 检查准备提交的治理改动 | `bash .harness/scripts/verify.sh --staged` |
 | 模拟 CI、去除本机 Skill/Memory 依赖 | `bash .harness/scripts/verify.sh --ci` |
 | 只诊断结构、链接和治理契约 | `bash .harness/scripts/harness-check.sh --local` 或 `--ci` |
-| 生成可复核分数与网页数据 | `python3 harness_score.py <repo> --format json` |
 
 不要默认只跑 `harness-check.sh` 就宣称 Harness 完成；完整验收应优先使用 `verify.sh`。
 
@@ -28,31 +34,10 @@ description: 当用户要求检查、体检、回归、验收、解释或诊断�
 1. 直接运行命令并保留退出码。不要用 `| head`、`|| true` 或吞掉 stderr 的方式判断成功。
 2. 需要保存长日志时写入临时目录，完整读取失败段；不要把临时日志当成任务证据提交。
 3. 先报告自动化结果，再报告人工检查；两者不能合并成一个“全部通过”。
-4. 从实际输出读取检查数量。基础闭环曾输出本地 `722`、CI `165` 项；独立 Skill 早期参考快照曾为本地 `728`、CI `171` 项。它们都不是永久硬编码的总分；数量变化时如实记录，不自行补算或夸大。
+4. 从实际输出读取检查数量。基础闭环曾输出本地 `722`、CI `165` 项；纳入本 Skill 的组件和路由断言后当前为本地 `728`、CI `171` 项。这些都不是永久硬编码的总分；数量变化时如实记录，不自行补算或夸大。
 5. `⚠️` 是警告，不等于 `✅`；只要任一应通过检查返回非零，就判定自动检查失败。
 6. 检查失败时先指出失败命令、失败项目和可复现路径。只有用户明确要求修复时才改文件；改前遵守 `AGENTS.md` 的范围说明和确认规则。
 7. 不使用 `--no-verify` 绕过 Hook，不为让检查通过而修改计数、删除反例、关闭治理项或把宿主烟测写成自动化证据。
-
-## Scorecard 规则
-
-需要量化比较或为网页/GIF 准备数据时，运行独立的 `harness_score.py`。它扫描目标仓库的 12 个治理维度，并输出 `score.value`、`confidence`、成熟度、硬上限、逐维度证据、宿主矩阵和真实执行记录。
-
-```bash
-python3 harness_score.py /path/to/harness \
-  --format json --output ./harness-scorecard.json \
-  --mode working-tree --mode ci \
-  --profile content-agent
-```
-
-评分规则：
-
-- 分数是加权成熟度，不是 Runtime Governance 或测试项数量；
-- 文档关键词和目录名称只能作为降权线索，不能替代可执行检查、契约、正反例或退出码；
-- 缺少验证入口、安全执行、CI 可复现性、反例回归或完成证据时触发硬上限；
-- 宿主配置存在只记为 configured，未看到真实宿主触发证据就保持 `unknown`；
-- 静态扫描、目标仓库执行结果、真实宿主烟测和内容人工验收必须分别报告；
-- 领域规则通过 `--profile` 叠加，通用 100 分与领域分分别展示；领域分会保留 `evidenceKind` 和独立置信度，文档声明不能冒充运行证据；当前内置 `content-agent`，自定义项目应新增 JSON Profile，而不是修改通用评分器；
-- JSON 字段和评分权重分别由 `references/scorecard-schema.json`、`references/score-rubric.json` 定义。
 
 ## 结果报告格式
 
