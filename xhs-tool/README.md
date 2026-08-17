@@ -13,4 +13,4 @@
 
 小工具运行在离线沙箱中，因此不执行 Python、Shell、GitHub API 或 `verify.sh`，也不会实时扫描任意仓库。需要更新展示数据时，在仓库外重新生成报告并更新 `scorecard-data.js`，再重新打包。
 
-上传 ZIP 时只包含：`index.html`、`app.js`、`styles.css`、`scorecard-data.js` 和 `icon.svg`。
+上传 ZIP 时包含：`index.html`、`app.js`、`styles.css`、`scorecard-data.js`、`icon.svg` 和平台图标 `icon.png`。
