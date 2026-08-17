@@ -42,6 +42,18 @@ The score is not a test-count total. A missing safety boundary, negative regress
 The product boundary is complementary to [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness): DeepSeek Harness is a plugin-based Agent Runtime, while this Skill is an independent acceptance and evidence layer for DeepSeek, Claude, Codex, Cursor, CodeBuddy, and custom Harness repositories. See [`references/market-positioning.md`](references/market-positioning.md).
 The GIF storyboard and offline JSON fields for a future demo page are in [`references/demo-storyboard.md`](references/demo-storyboard.md).
 
+## Seven product differentiators
+
+1. **Independent acceptance** — audits any Harness instead of serving one model runtime.
+2. **Evidence first** — file/line references, exit codes, positive and negative fixtures, and run records outrank README keywords.
+3. **Hard gates** — missing safety enforcement, CI parity, negative regression, or completion evidence caps maturity automatically.
+4. **State-aware** — separates `working-tree`, `staged`, and `ci` rather than treating local success as CI success.
+5. **Cross-host** — checks Claude Code, Cursor, CodeBuddy, and Codex adapters; configured is not the same as triggered, so missing smoke evidence stays `unknown`.
+6. **Domain governance** — the `content-agent` profile covers publication status, provenance, channel contracts, artifact boundaries, visual review, and external side effects.
+7. **Visualizable loop** — JSON feeds a web page, GIF, CI artifact, and baseline comparison showing what changed after a fix.
+
+Together these define the product boundary: a runtime makes an Agent run; Harness Check proves that its control plane and delivery boundary are trustworthy.
+
 ## Install into a Harness repository
 
 From the target repository root:

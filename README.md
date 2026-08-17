@@ -13,6 +13,7 @@
 - [它解决什么问题](#它解决什么问题)
 - [能力边界](#能力边界)
 - [Harness Scorecard 打分系统](#harness-scorecard-打分系统)
+- [七个核心验收优势](#七个核心验收优势)
 - [快速开始](#快速开始)
 - [三种验证模式](#三种验证模式)
 - [完整检查层](#完整检查层)
@@ -99,6 +100,20 @@ python3 harness_score.py /path/to/harness \
 
 完整对标与产品差异化方案见 [`references/market-positioning.md`](./references/market-positioning.md)。
 网页和 GIF 的数据字段、分镜与离线展示边界见 [`references/demo-storyboard.md`](./references/demo-storyboard.md)。
+
+## 七个核心验收优势
+
+这不是另一个 Agent Runtime，而是一层可以叠加在任何 Harness 上的独立验收层：
+
+1. **独立验收**：检查任何 Harness，而不是只服务某个模型或某个运行时。
+2. **证据优先**：文件、行号、退出码、正反例和运行记录优先于 README 关键词；关键词只能降权计分。
+3. **硬门槛**：缺少安全边界、CI、反例回归或完成证据契约时自动封顶，不能用文档数量刷高成熟度。
+4. **跨状态**：分别检查 `working-tree`、`staged`、`ci`，不把本机通过冒充 CI 通过。
+5. **跨宿主**：检查 Claude Code、Cursor、CodeBuddy、Codex 等适配；配置存在不等于 Hook 真触发，没有烟测证据就保持 `unknown`。
+6. **垂直治理**：通过 `content-agent` Profile 检查已发布门、来源、渠道合同、生成物边界、视觉验收和外部副作用。
+7. **可视化闭环**：JSON 可直接驱动网页、GIF、CI Artifact 和修复前后 `baseline` 对比。
+
+这七点共同构成产品边界：DeepSeek Harness 等运行时负责把 Agent 跑起来，Harness Check 负责证明它的控制面和交付边界值得信任。
 
 ## 快速开始
 
