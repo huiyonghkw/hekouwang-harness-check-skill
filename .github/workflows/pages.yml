@@ -26,6 +26,7 @@ jobs:
       - name: Validate static product page
         run: |
           test -s website/index.html
+          test -s website/assets/favicon.svg
           test -s website/assets/site.css
           test -s website/assets/app.js
           test -s website/assets/harness-doctor-run.gif

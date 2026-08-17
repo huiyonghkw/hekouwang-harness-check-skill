@@ -35,6 +35,7 @@ jobs:
           test -f tests/test_harness_score.py
           test -f assets/harness-check-flow.svg
           test -f website/index.html
+          test -f website/assets/favicon.svg
           test -f website/assets/site.css
           test -f website/assets/app.js
           test -f website/guide/index.html

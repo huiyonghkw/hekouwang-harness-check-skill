@@ -4,6 +4,7 @@
 
 ## Unreleased
 
+- 为产品页和 Guide 补充品牌 favicon，避免 GitHub Pages 浏览器标签显示默认图标。
 - 新增标准库实现的 `Harness Scorecard` CLI，提供 12 维加权分、硬上限、置信度、成熟度、宿主矩阵、退出码和 JSON/Markdown 输出；
 - 新增评分规则与 JSON Schema，输出可直接供后续网页/GIF 消费；
 - 新增强/弱仓库 fixture 回归，验证 README 关键词不能绕过缺失门禁；

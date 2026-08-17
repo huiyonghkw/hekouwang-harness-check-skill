@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">hekouwang Harness Doctor</title>
+  <desc id="desc">A green and purple HKW mark for Harness Doctor.</desc>
+  <defs>
+    <linearGradient id="brand" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00a884"/>
+      <stop offset="1" stop-color="#6652e8"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#17222a"/>
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#brand)"/>
+  <path fill="#fff" d="M17 18h7v10h16V18h7v28h-7V35H24v11h-7V18Z"/>
+  <path fill="#fff" d="M28 18h8v28h-8z" opacity=".92"/>
+</svg>
