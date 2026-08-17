@@ -1,0 +1,46 @@
+name: Package validation
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Validate package shape
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f README.md
+          test -f README.en.md
+          test -f SKILL.md
+          test -f LICENSE
+          test -f CHANGELOG.md
+          test -f CONTRIBUTING.md
+          test -f agents/openai.yaml
+          test -f references/check-matrix.md
+          test -f assets/harness-check-flow.svg
+          grep -q '^name: hekouwang-harness-check-skill$' SKILL.md
+          grep -q 'working-tree' SKILL.md
+          grep -q 'staged' SKILL.md
+          grep -q 'ci' SKILL.md
+          grep -q 'hekouwang-harness-check-skill' README.en.md
+          xmllint --noout assets/harness-check-flow.svg
+
+      - name: Check Markdown links and whitespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          if grep -RInE '(^|[[:space:]])(file://|/Users/|/private/|/tmp/)' \
+            README.md README.en.md SKILL.md CONTRIBUTING.md references; then
+            echo 'Found machine-local path'
+            exit 1
+          fi

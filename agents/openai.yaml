@@ -1,0 +1,4 @@
+interface:
+  display_name: "Harness 检查器"
+  short_description: "运行本地与 CI Harness 检查并解释治理结果"
+  default_prompt: "使用 $hekouwang-harness-check-skill 检查当前仓库的 Harness，并分别报告自动化结果与人工宿主验收边界。"
