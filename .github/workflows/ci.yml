@@ -37,6 +37,9 @@ jobs:
           test -f website/index.html
           test -f website/assets/site.css
           test -f website/assets/app.js
+          test -f website/guide/index.html
+          test -f website/guide/assets/guide.css
+          test -f website/guide/assets/guide.js
           test -f website/data/demo-scorecard.json
           test -f website/assets/fonts/GoogleSans-Finance-Latin.woff2
           test -f website/assets/fonts/GoogleSansText-Regular.ttf
@@ -53,6 +56,19 @@ jobs:
           python3 -c 'import json; json.load(open("website/data/demo-scorecard.json"))'
           python3 -c 'from html.parser import HTMLParser; HTMLParser().feed(open("website/index.html").read())'
           node --check website/assets/app.js
+          node --check website/guide/assets/guide.js
+          python3 - <<'PY'
+          from pathlib import Path
+
+          site = Path("website/assets/site.css").read_text()
+          guide = Path("website/guide/assets/guide.css").read_text()
+          assert ".scan-lines .check, .scan-lines .partial" in site
+          assert ".check, .partial" not in site
+          assert "font-weight:500 700" not in guide
+          assert "font-weight:400 900" not in guide
+          assert '--display:"Google Sans","Google Sans Flex"' in guide
+          print("web typography and scorecard layout guard: ok")
+          PY
 
       - name: Test Harness Scorecard
         shell: bash
