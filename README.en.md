@@ -15,6 +15,10 @@ This is the standalone source repository for the Skill. It selects the right ver
 
 The Skill is an orchestration layer. It does not copy or replace the target repository’s `.harness/` scripts and contracts. The first reference implementation is [hekouwang-content-agent](https://github.com/huiyonghkw/hekouwang-content-agent).
 
+Product name proposal: **hekouwang Harness Doctor**, shortened to **Harness Doctor**. Product page: [hekouwang Harness Doctor — make every Harness provable](https://huiyonghkw.github.io/hekouwang-harness-check-skill/). It includes an interactive scorecard, evidence ledger, host matrix, domain profile, and downloadable JSON demo.
+
+For a beginner-to-advanced introduction, read the [Chinese Harness learning guide](docs/harness-from-zero-to-advanced.zh-CN.md) or open the [Guide site](https://huiyonghkw.github.io/hekouwang-harness-check-skill/guide/). It maps the practical build sequence from `CLAUDE.md` and Skills through Hooks, Subagents, Evaluators, Context Reset, Sprint Contracts, failure ledgers, and independent acceptance evidence.
+
 ## Harness Scorecard
 
 The repository also ships an evidence-weighted scorecard. It has 12 dimensions, hard caps, confidence, maturity bands, a host matrix, and machine-readable findings. It deliberately treats prose and keywords as weaker than executable checks, contracts, fixtures, and observed exit codes.
@@ -28,6 +32,12 @@ python3 harness_score.py /path/to/harness \
 python3 harness_score.py /path/to/harness \
   --format markdown --mode working-tree --mode ci
 
+# Live, color-aware terminal output for a ScreenStudio/product demo
+python3 harness_score.py /path/to/harness \
+  --profile content-agent \
+  --mode working-tree --mode ci \
+  --format terminal --live --color always
+
 # Add the content-agent domain profile
 python3 harness_score.py /path/to/harness \
   --profile content-agent --format json
@@ -38,6 +48,8 @@ python3 harness_score.py /path/to/harness \
 ```
 
 The score is not a test-count total. A missing safety boundary, negative regression, CI parity, or completion evidence contract activates a hard cap. A configured host is not the same as a real host smoke test; it remains `unknown` until there is explicit evidence.
+
+`--format terminal --live` is the human-facing demo mode: live status is written to stderr while the final score, dimensions, exit codes, governance counts, and host boundary are rendered with color. JSON and Markdown remain machine-safe and contain no ANSI escape codes.
 
 The product boundary is complementary to [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness): DeepSeek Harness is a plugin-based Agent Runtime, while this Skill is an independent acceptance and evidence layer for DeepSeek, Claude, Codex, Cursor, CodeBuddy, and custom Harness repositories. See [`references/market-positioning.md`](references/market-positioning.md).
 The GIF storyboard and offline JSON fields for a future demo page are in [`references/demo-storyboard.md`](references/demo-storyboard.md).
@@ -119,6 +131,7 @@ references/scorecard-schema.json JSON output contract for web/GIF consumers
 references/market-positioning.md Product boundary and DeepSeek comparison
 references/demo-storyboard.md  GIF storyboard and web data contract
 references/profiles/             Domain profiles; content-agent ships first
+docs/harness-from-zero-to-advanced.zh-CN.md  Beginner-to-advanced Harness guide
 harness_score.py                 Standard-library scorecard CLI
 tests/test_harness_score.py      Strong/weak fixture regression tests
 assets/harness-check-flow.svg    Portable workflow diagram

@@ -12,7 +12,7 @@
 | 5–12s | Score、Confidence、Maturity、Decision 四个指标出现 | 分数和置信度不是一回事 |
 | 12–22s | 12 维横条从总分展开 | 检查规则、CI、安全、恢复、证据和回归 |
 | 22–32s | 点击 `no_negative_regression` 或 `no_evidence_contract` | 缺关键证据会触发硬上限，长 README 也绕不过去 |
-| 32–42s | 展开 `executions`，显示命令、exit code、728/171 | 检查数量只从真实日志读取，不是质量分 |
+| 32–42s | 展开 `executions`，显示命令、exit code、N/M | 检查数量只从真实日志读取，不是质量分 |
 | 42–50s | Host matrix 显示 configured / unknown | 配置存在不等于真实宿主触发 |
 | 50–60s | 用 `--baseline` 重新扫描，显示 delta | 修复能留下可审计变化，可直接用于 CI/网页 |
 

@@ -11,6 +11,15 @@
 - 增加 DeepSeek Harness 对标定位，明确运行时与独立验收层的产品边界；
 - 新增 GIF/网页演示分镜与离线 JSON 数据消费说明；
 - 修正执行日志的检查数量解析、超时/启动失败结构化和失败标签误报。
+- 新增自包含 GitHub Pages 产品页：用 Terminal Kit 风格的双语长页展示独立验收定位、四个差异化轴、交互式 Scorecard、证据闭环、`content-agent` Profile 和真实宿主 `unknown` 边界；
+- 新增 `website/data/demo-scorecard.json` 演示数据与 Pages 发布工作流，JSON 可下载并可继续驱动网页、GIF 和 CI Artifact。
+- 产品页展示名调整为 `hekouwang Harness Doctor`，简称 `Harness Doctor`：用品牌化的“体检/诊断/复查”叙事突出与运行时、普通审计工具的边界；仓库名与 Skill 名保持不变。
+- 优化产品页首屏：中文标题按语义固定为三行，`Harness` 使用明确的 Google Sans 粗体字重，并加入绿色—紫色的浅层渐变背景。
+- 新增 `harness_score.py --format terminal --live --color`：真实执行验证器时显示动态进度，完成后用颜色区分 `PASS`、`PARTIAL`、`BLOCKED`、分数、置信度和宿主 `unknown`；JSON/Markdown 输出保持无 ANSI 污染。
+- 新增 [`docs/harness-from-zero-to-advanced.zh-CN.md`](docs/harness-from-zero-to-advanced.zh-CN.md)：基于 36 页 Harness 入门教程整理从 `Agent = Model + Harness`、Guides/Sensors、`CLAUDE.md`、Hook、Subagent、Evaluator、Context Reset、Sprint Contract 到失败台账的完整学习路线，并补充独立验收层的证据、状态、宿主和硬门槛。
+- 产品页新增“从 0 到可验收”学习路线和真实 `Ghostty.gif` 运行录屏；GIF 只作为动态入口，完整结果仍由 JSON Scorecard、真实退出码和人工/宿主边界共同决定。
+- 新增 `website/guide/index.html` 独立 Guide 文档站：采用 Terminal Kit 同类的粘性报头、左侧章节导航、阅读进度、代码块、表格、成熟度路线和真实运行证据；产品首页与完整教程分层呈现。
+- 精简产品首页：移除占据首屏下方空间的“文档地图”卡片区，并在顶部导航新增 `Guide / 文档` 入口，直接进入独立教程页。
 
 ## 0.1.0 — 2026-08-17
 

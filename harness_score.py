@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import selectors
 import subprocess
 import sys
 import time
@@ -22,6 +23,100 @@ HERE = Path(__file__).resolve().parent
 RUBRIC_PATH = HERE / "references" / "score-rubric.json"
 SKIP_DIRS = {".git", "node_modules", ".venv", "venv", "__pycache__", ".pytest_cache", "dist", "build"}
 MAX_TEXT_BYTES = 2_000_000
+SPINNER_FRAMES = ("⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏")
+ANSI = {
+    "reset": "\033[0m",
+    "bold": "\033[1m",
+    "dim": "\033[2m",
+    "red": "\033[31m",
+    "green": "\033[32m",
+    "yellow": "\033[33m",
+    "blue": "\033[34m",
+    "magenta": "\033[35m",
+    "cyan": "\033[36m",
+    "white": "\033[37m",
+}
+
+
+def color_is_enabled(mode: str) -> bool:
+    if mode == "always":
+        return True
+    if mode == "never":
+        return False
+    return sys.stderr.isatty()
+
+
+def paint(value: Any, color: str, enabled: bool = True, bold: bool = False) -> str:
+    text_value = str(value)
+    if not enabled:
+        return text_value
+    prefix = ANSI[color]
+    if bold:
+        prefix = ANSI["bold"] + prefix
+    return f"{prefix}{text_value}{ANSI['reset']}"
+
+
+def summarize_activity(line: str) -> str:
+    cleaned = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", line).strip()
+    if not cleaned:
+        return "verifying controls…"
+    cleaned = cleaned.replace("==", "").strip()
+    if len(cleaned) > 78:
+        return cleaned[:75] + "…"
+    return cleaned
+
+
+class LiveConsole:
+    """Small presentation layer for terminal demos; it never changes evidence."""
+
+    def __init__(self, enabled: bool, color: str = "auto") -> None:
+        self.enabled = enabled
+        self.colors = color_is_enabled(color)
+        self.interactive = enabled and sys.stderr.isatty()
+        self.tick = 0
+
+    def write(self, value: str = "") -> None:
+        if self.enabled:
+            sys.stderr.write(value + "\n")
+            sys.stderr.flush()
+
+    def header(self, target: str) -> None:
+        if not self.enabled:
+            return
+        self.write("")
+        self.write(paint("  HEKOUWANG HARNESS DOCTOR", "cyan", self.colors, bold=True))
+        self.write(paint(f"  target · {target}", "dim", self.colors))
+
+    def progress(self, label: str, detail: str) -> None:
+        if not self.enabled:
+            return
+        frame = SPINNER_FRAMES[self.tick % len(SPINNER_FRAMES)]
+        self.tick += 1
+        line = f"  {paint(frame, 'magenta', self.colors)} {paint(label, 'white', self.colors, bold=True):<22} {paint(detail, 'dim', self.colors)}"
+        if self.interactive:
+            sys.stderr.write("\r\033[2K" + line)
+            sys.stderr.flush()
+        elif self.tick == 1 or self.tick % 10 == 0:
+            self.write(line)
+
+    def clear_progress(self) -> None:
+        if self.interactive:
+            sys.stderr.write("\r\033[2K")
+            sys.stderr.flush()
+
+    def result(self, label: str, passed: bool, detail: str) -> None:
+        if not self.enabled:
+            return
+        self.clear_progress()
+        symbol = "✓" if passed else "✕"
+        tone = "green" if passed else "red"
+        self.write(f"  {paint(symbol, tone, self.colors, bold=True)} {paint(label, tone, self.colors, bold=True)} {paint(detail, 'dim', self.colors)}")
+
+    def note(self, label: str, detail: str) -> None:
+        if not self.enabled:
+            return
+        self.clear_progress()
+        self.write(f"  {paint('·', 'blue', self.colors)} {paint(label, 'white', self.colors, bold=True)} {paint(detail, 'dim', self.colors)}")
 
 
 def load_rubric() -> dict[str, Any]:
@@ -164,7 +259,7 @@ def git_state(root: Path) -> dict[str, Any]:
     }
 
 
-def execute_verify(root: Path, mode: str) -> dict[str, Any]:
+def execute_verify(root: Path, mode: str, live: bool = False, console: LiveConsole | None = None) -> dict[str, Any]:
     script = root / ".harness" / "scripts" / "verify.sh"
     package_path = root / "package.json"
     package_scripts: dict[str, Any] = {}
@@ -190,19 +285,58 @@ def execute_verify(root: Path, mode: str) -> dict[str, Any]:
         argv = ["pnpm", "run", script_name]
 
     started = time.monotonic()
-    try:
-        result = subprocess.run(argv, cwd=root, text=True, capture_output=True, check=False, timeout=900)
-        output = f"{result.stdout}\n{result.stderr}"
-        exit_code = result.returncode
-        timed_out = False
-    except subprocess.TimeoutExpired as error:
-        output = f"{error.stdout or ''}\n{error.stderr or ''}\nverification timed out after 900 seconds"
-        exit_code = 124
-        timed_out = True
-    except OSError as error:
-        output = f"verification could not start: {error}"
-        exit_code = 126
-        timed_out = False
+    output = ""
+    timed_out = False
+    if live:
+        active_console = console or LiveConsole(True)
+        chunks: list[str] = []
+        last_activity = "starting verification…"
+        try:
+            process = subprocess.Popen(
+                argv,
+                cwd=root,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                bufsize=1,
+            )
+            selector = selectors.DefaultSelector()
+            if process.stdout is not None:
+                selector.register(process.stdout, selectors.EVENT_READ)
+            while selector.get_map():
+                if not timed_out and time.monotonic() - started >= 900:
+                    process.kill()
+                    timed_out = True
+                    last_activity = "verification timed out after 900 seconds"
+                for key, _ in selector.select(timeout=.08):
+                    line = key.fileobj.readline()
+                    if line:
+                        chunks.append(line)
+                        last_activity = summarize_activity(line)
+                    else:
+                        selector.unregister(key.fileobj)
+                        key.fileobj.close()
+                active_console.progress(f"RUN {mode}", last_activity)
+            exit_code = 124 if timed_out else process.wait()
+            selector.close()
+            output = "".join(chunks)
+            if timed_out:
+                output += "\nverification timed out after 900 seconds\n"
+        except OSError as error:
+            output = f"verification could not start: {error}"
+            exit_code = 126
+    else:
+        try:
+            result = subprocess.run(argv, cwd=root, text=True, capture_output=True, check=False, timeout=900)
+            output = f"{result.stdout}\n{result.stderr}"
+            exit_code = result.returncode
+        except subprocess.TimeoutExpired as error:
+            output = f"{error.stdout or ''}\n{error.stderr or ''}\nverification timed out after 900 seconds"
+            exit_code = 124
+            timed_out = True
+        except OSError as error:
+            output = f"verification could not start: {error}"
+            exit_code = 126
     elapsed = round(time.monotonic() - started, 3)
     counts = [int(value) for value in re.findall(r"(\d+) 项检查通过", output)]
     labels = []
@@ -332,7 +466,11 @@ def scan_profile(root: Path, profile: dict[str, Any] | None) -> dict[str, Any] |
     }
 
 
-def scan(root: Path, modes: list[str] | None = None, profile: str | None = None) -> dict[str, Any]:
+def scan(root: Path, modes: list[str] | None = None, profile: str | None = None,
+         live: bool = False, color: str = "auto") -> dict[str, Any]:
+    root = root.resolve()
+    console = LiveConsole(live, color)
+    console.header(root.name)
     rubric = load_rubric()
     loaded_profile = load_profile(profile)
     dimensions = {
@@ -347,7 +485,6 @@ def scan(root: Path, modes: list[str] | None = None, profile: str | None = None)
         for item in rubric["dimensions"]
     }
 
-    root = root.resolve()
     text_roots = [
         root / "AGENTS.md", root / "CLAUDE.md", root / "README.md", root / "README.zh.md",
         root / ".harness", root / ".github", root / ".agents", root / ".claude", root / ".cursor",
@@ -521,7 +658,21 @@ def scan(root: Path, modes: list[str] | None = None, profile: str | None = None)
         add_signal(dimensions, "human_boundary", 2, "存在人工或宿主通过证据", "发现结构化的真实宿主或人工通过记录。", smoke_evidence[:10], strength="runtime")
 
     state = git_state(root)
-    executions = [execute_verify(root, mode) for mode in (modes or [])]
+    if live:
+        console.note("STATIC EVIDENCE", f"indexed {len(dimensions)} dimensions · mapped {len(host_hits)} hosts")
+    executions: list[dict[str, Any]] = []
+    for mode in (modes or []):
+        if live:
+            console.progress(f"PREPARE {mode}", "opening the target verifier…")
+        execution = execute_verify(root, mode, live=live, console=console)
+        executions.append(execution)
+        if live:
+            if execution.get("executed"):
+                counts = ", ".join(str(value) for value in execution.get("governanceCounts", [])) or "no count"
+                detail = f"exit {execution.get('exitCode')} · {execution.get('durationSeconds')}s · governance {counts}"
+                console.result(mode, bool(execution.get("passed")), detail)
+            else:
+                console.result(mode, False, execution.get("reason", "not executed"))
     for execution in executions:
         if execution.get("executed") and execution.get("passed"):
             add_signal(dimensions, "verification", 0, f"{execution['mode']} 执行通过", "运行时验证通过，增强报告置信度。", [execution["command"]], strength="runtime")
@@ -582,6 +733,8 @@ def scan(root: Path, modes: list[str] | None = None, profile: str | None = None)
         findings.append({"severity": "P1", "title": "宿主适配不完整", "detail": "至少一个目标 Agent 宿主没有检测到配置或入口。", "evidence": []})
     decision = "BLOCKED" if caps or any(execution.get("executed") and not execution.get("passed") for execution in executions) else "READY" if score >= 95 and confidence >= 85 and all(item["status"] == "pass" for item in dimensions.values()) else "CONDITIONAL"
     domain_profile = scan_profile(root, loaded_profile)
+    if live:
+        console.note("SCORECARD", f"bound {len(dimensions)} dimensions · applied {len(caps)} hard caps · decision {decision}")
 
     return {
         "schemaVersion": "1.0",
@@ -683,21 +836,99 @@ def markdown(report: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def terminal_report(report: dict[str, Any], colors: bool = True) -> str:
+    """Render a human-facing, color-aware terminal verdict."""
+    score = report["score"]
+    target = report["target"]
+    decision = str(score.get("decision", "CONDITIONAL"))
+    decision_tone = {"READY": "green", "CONDITIONAL": "yellow", "BLOCKED": "red"}.get(decision, "white")
+    score_value = int(score.get("value", 0))
+    score_tone = "green" if score_value >= 90 else "yellow" if score_value >= 70 else "red"
+    score_label = paint(f"{score_value}/{score.get('max', 100)}", score_tone, colors, bold=True)
+    confidence_tone = "green" if score.get("confidence", 0) >= 85 else "yellow"
+    confidence_label = paint(f"{score.get('confidence', 0)}/100", confidence_tone, colors, bold=True)
+    maturity = score.get("maturity", {})
+    executions = report.get("executions", [])
+    hosts = report.get("hosts", [])
+    configured = sum(1 for host in hosts if host.get("configured"))
+    unknown_smoke = sum(1 for host in hosts if host.get("smokeTest") == "unknown")
+    governance: list[str] = []
+    for execution in executions:
+        counts = execution.get("governanceCounts", [])
+        if counts:
+            governance.append(f"{execution.get('mode')}: {', '.join(str(value) for value in counts)}")
+
+    lines = [
+        "",
+        paint("╭─ HEKOUWANG HARNESS DOCTOR ─────────────────────────╮", "cyan", colors, bold=True),
+        f"│ TARGET      {target.get('name', 'Harness')}",
+        f"│ HEAD        {str(target.get('git', {}).get('head') or 'unknown')[:12]} · dirty={target.get('git', {}).get('dirty')}",
+        "├─────────────────────────────────────────────────────┤",
+        f"│ SCORE       {score_label}     CONFIDENCE {confidence_label}",
+        f"│ DECISION    {paint(decision, decision_tone, colors, bold=True)}     MATURITY {maturity.get('id', '—')} · {maturity.get('name', '—')}",
+        f"│ HARD CAPS   {paint(str(len(score.get('caps', []))), 'red' if score.get('caps') else 'green', colors, bold=True)} active",
+        "├─ DIMENSIONS ────────────────────────────────────────┤",
+    ]
+    for dimension in report.get("dimensions", []):
+        weight = int(dimension.get("weight", 0))
+        earned = int(dimension.get("earned", 0))
+        filled = round(10 * earned / weight) if weight else 0
+        status = str(dimension.get("status", "missing"))
+        tone = {"pass": "green", "partial": "yellow", "missing": "red", "fail": "red"}.get(status, "white")
+        bar = paint("█" * filled, "green" if status == "pass" else tone, colors) + paint("░" * (10 - filled), "dim", colors)
+        lines.append(f"│ {paint('●', tone, colors)} {dimension.get('name', dimension.get('id'))}  {bar} {earned}/{weight} {paint(status.upper(), tone, colors, bold=True)}")
+    lines.extend([
+        "├─ RUNTIME EVIDENCE ──────────────────────────────────┤",
+    ])
+    for execution in executions:
+        if not execution.get("executed"):
+            lines.append(f"│ {paint('✕', 'red', colors)} {execution.get('mode', 'unknown')} · not executed · {execution.get('reason', 'unknown reason')}")
+            continue
+        tone = "green" if execution.get("passed") else "red"
+        counts = ", ".join(str(value) for value in execution.get("governanceCounts", [])) or "—"
+        lines.append(f"│ {paint('✓' if execution.get('passed') else '✕', tone, colors)} {execution.get('mode')} · exit {execution.get('exitCode')} · {execution.get('durationSeconds')}s · governance {counts}")
+    if not executions:
+        lines.append(f"│ {paint('·', 'yellow', colors)} static scan only · no verifier executed")
+    lines.extend([
+        f"│ GOVERNANCE  {paint(' · '.join(governance) if governance else 'not observed', 'cyan', colors)}",
+        f"│ HOSTS       {configured}/{len(hosts)} configured · {unknown_smoke} smoke tests unknown",
+    ])
+    profile = report.get("profile")
+    if profile:
+        profile_score = profile.get("score", {})
+        lines.append(f"│ PROFILE     {profile.get('name', profile.get('id', 'profile'))} · {profile_score.get('value', 0)}/{profile_score.get('max', 0)} · confidence {profile_score.get('confidence', 0)}")
+    lines.append("╰─────────────────────────────────────────────────────╯")
+    findings = report.get("findings", [])
+    if findings:
+        lines.append("")
+        lines.append(paint("FINDINGS", "yellow", colors, bold=True))
+        for finding in findings[:4]:
+            severity = finding.get("severity", "P2")
+            tone = "red" if severity in {"P0", "P1"} else "yellow"
+            lines.append(f"  {paint(severity, tone, colors, bold=True)} · {finding.get('title', 'finding')}")
+    lines.append("")
+    lines.append(paint("Evidence-first · configured ≠ triggered · test count ≠ quality score", "dim", colors))
+    return "\n".join(lines) + "\n"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate an evidence-first Harness scorecard.")
     parser.add_argument("repo", help="Target Harness repository")
-    parser.add_argument("--format", choices=["json", "markdown"], default="markdown")
+    parser.add_argument("--format", choices=["json", "markdown", "terminal"], default="markdown")
     parser.add_argument("--output", help="Write the report to this path")
     parser.add_argument("--mode", action="append", choices=["working-tree", "staged", "ci"], help="Execute verify.sh in this mode; repeat for multiple modes")
     parser.add_argument("--profile", help="Optional domain profile name or JSON path, for example content-agent")
     parser.add_argument("--baseline", help="Optional previous JSON scorecard for score/dimension deltas")
+    parser.add_argument("--live", action="store_true", help="Show animated live verification progress on stderr")
+    parser.add_argument("--color", choices=["auto", "always", "never"], default="auto", help="Color policy for live/terminal output")
     args = parser.parse_args(argv)
     root = Path(args.repo).expanduser().resolve()
     if not root.is_dir():
         print(f"Target is not a directory: {root}", file=sys.stderr)
         return 2
     try:
-        report = scan(root, args.mode, args.profile)
+        live = args.live or args.format == "terminal"
+        report = scan(root, args.mode, args.profile, live=live, color=args.color)
         if args.baseline:
             baseline_path = Path(args.baseline).expanduser().resolve()
             baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
@@ -705,7 +936,12 @@ def main(argv: list[str] | None = None) -> int:
     except (FileNotFoundError, ValueError, json.JSONDecodeError) as error:
         print(str(error), file=sys.stderr)
         return 2
-    content = json.dumps(report, ensure_ascii=False, indent=2) if args.format == "json" else markdown(report)
+    if args.format == "json":
+        content = json.dumps(report, ensure_ascii=False, indent=2)
+    elif args.format == "terminal":
+        content = terminal_report(report, colors=color_is_enabled(args.color) and not args.output)
+    else:
+        content = markdown(report)
     if args.output:
         Path(args.output).expanduser().resolve().write_text(content + ("" if content.endswith("\n") else "\n"), encoding="utf-8")
     else:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import contextlib
+import io
 import json
 import sys
 import tempfile
@@ -123,6 +125,20 @@ jobs:
 
             self.assertIn("package.json:scripts.check:ci", report["verification"]["entrypoints"])
             self.assertNotIn("no_verification_entrypoint", {item["id"] for item in report["score"]["caps"]})
+
+    def test_live_terminal_mode_keeps_progress_and_colored_verdict_separate(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.strong_fixture(root)
+            trace = io.StringIO()
+            with contextlib.redirect_stderr(trace):
+                report = harness_score.scan(root, ["ci"], live=True, color="never")
+            rendered = harness_score.terminal_report(report, colors=False)
+
+            self.assertTrue("RUN ci" in trace.getvalue() or "PREPARE ci" in trace.getvalue())
+            self.assertIn("ci · exit 0", rendered)
+            self.assertIn("SCORE", rendered)
+            self.assertIn("configured ≠ triggered", rendered)
 
 
 if __name__ == "__main__":

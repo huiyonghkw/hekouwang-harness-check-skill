@@ -6,6 +6,18 @@ DeepSeek Harness 负责把 Agent 跑起来；`hekouwang-harness-check-skill` 负
 
 产品名可以使用 **Harness Integrity Score**，中文名为“Harness 完整性评分器”。它不是另一个 Agent Runtime，也不是某个模型的 SDK，而是运行时之上的独立验收层。
 
+### 产品展示名
+
+当前推荐产品展示名为 **hekouwang Harness Doctor**，简称 **Harness Doctor**：
+
+- `Doctor` 直接对应“体检、诊断、处方、复查”的产品闭环，比 `Check` 更有记忆点，也能承载网页、CLI 和 GIF 演示；
+- `hekouwang` 把产品和你的内容工程实践绑定，形成独立于某个模型或宿主的品牌来源；
+- 不使用 `Audit`，避免与 ContextOS 的运行时审计叙事重叠；
+- 不把 `Proof` 作为主名：GitHub 上已经存在与 DeepSeek Harness 相关的同名 `fieldnote-ops/harnessproof` 项目，容易造成品牌与搜索混淆；
+- 仓库名、Skill 名和安装入口继续保留 `hekouwang-harness-check-skill`，展示名与技术包名解耦；未来 CLI 可使用 `hekouwang-harness-doctor`。
+
+备选名为 `HarnessLedger`（证据台账方向）和 `BoundaryProof`（跨状态/宿主边界方向）。
+
 ## 与 DeepSeek Harness 的关系
 
 DeepSeek Harness 的公开架构主线是 Cordis 插件树：模型适配器、工具注册、会话日志和 Agent Loop 都可以通过插件和 Profile 组合；它的 README 也明确将项目定位为 developer preview，并提醒兼容性会快速变化。参考：[DeepSeek Harness README](https://github.com/deepseek-ai/deepseek-harness/blob/master/README.md)、[DeepSeek Harness architecture](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/architecture.md)。

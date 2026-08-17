@@ -30,13 +30,13 @@ python3 harness_score.py /path/to/repo \
 Runtime Governance 会在 `test-runtime-governance.sh` 的当前仓库正例中输出检查数量。数量随断言变化，必须区分历史基线和当前结果：
 
 - 基础闭环基线：本地 722 项、CI 165 项治理检查通过；
-- 纳入本 Skill 的组件与路由断言后：本地 728 项、CI 171 项治理检查通过。
+- 独立 Skill 早期参考快照：本地 728 项、CI 171 项治理检查通过；当前目标仓库应以实际日志为准。
 
 这两个数字是输出中的当前观测值，不是 `verify.sh` 的永久总分，也不是整套内容质量得分。后续新增或删除断言后，必须以实际日志为准更新数字。
 
 推荐写法：
 
-> `verify.sh --working-tree` 自动化通过；其中 Runtime Governance 当前报告 728 项本地检查通过。四端真实宿主烟测仍需另行确认。
+> `verify.sh --working-tree` 自动化通过；其中 Runtime Governance 的具体数量以当次日志为准。四端真实宿主烟测仍需另行确认。
 
 不推荐写法：
 

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f9">
+  <meta name="description" content="Harness 从 0 到可验收：从 Agent = Model + Harness 到 Hook、Evaluator、失败台账和独立验收。">
+  <title>Harness 从 0 到可验收 · hekouwang Harness Doctor</title>
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <div class="guide-progress" id="guideProgress"></div>
+  <div class="guide-frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+  <header class="guide-masthead">
+    <div class="guide-wrap masthead-inner">
+      <a class="guide-brand" href="../index.html?lang=zh" aria-label="返回 Harness Doctor 产品页">
+        <span class="brand-wordmark">hekouwang</span><span class="brand-divider">/</span><span class="brand-name">Harness <b>Doctor</b></span>
+      </a>
+      <div class="masthead-center"><span>GUIDE</span><s>·</s><b>FROM ZERO TO PROVABLE</b></div>
+      <div class="masthead-actions">
+        <a href="../index.html?lang=zh">产品页 ↗</a>
+        <a href="https://github.com/huiyonghkw/hekouwang-harness-check-skill">GitHub ↗</a>
+        <a class="language-link" href="https://github.com/huiyonghkw/hekouwang-harness-check-skill/blob/main/README.en.md">EN</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="guide-layout guide-wrap">
+    <aside class="guide-sidebar" aria-label="文档章节导航">
+      <div class="side-label">ON THIS GUIDE</div>
+      <nav id="guideNav">
+        <a href="#start" data-section="start"><b>00</b><span>先记住一句话</span></a>
+        <a href="#why" data-section="why"><b>01</b><span>为什么工具齐了还会错</span></a>
+        <a href="#layers" data-section="layers"><b>02</b><span>Harness 的分层结构</span></a>
+        <a href="#first-loop" data-section="first-loop"><b>03</b><span>从 0 做最小闭环</span></a>
+        <a href="#claude-md" data-section="claude-md"><b>04</b><span>CLAUDE.md 规则系统</span></a>
+        <a href="#hooks" data-section="hooks"><b>05</b><span>Hook 与模型外红线</span></a>
+        <a href="#evaluator" data-section="evaluator"><b>06</b><span>Subagent 与 Evaluator</span></a>
+        <a href="#advanced" data-section="advanced"><b>07</b><span>长任务高级 Harness</span></a>
+        <a href="#failures" data-section="failures"><b>08</b><span>失败台账与恢复</span></a>
+        <a href="#acceptance" data-section="acceptance"><b>09</b><span>独立验收层</span></a>
+        <a href="#maturity" data-section="maturity"><b>10</b><span>成熟度路线</span></a>
+        <a href="#checklist" data-section="checklist"><b>11</b><span>小白实践清单</span></a>
+        <a href="#run" data-section="run"><b>12</b><span>运行 Harness Doctor</span></a>
+      </nav>
+      <div class="side-note">
+        <span class="note-mark">!</span>
+        <p>本文的构建主线来自 36 页教程；绿色部分是搭建，紫色部分是独立验收。</p>
+      </div>
+    </aside>
+
+    <main class="guide-main" id="guideMain">
+      <section class="guide-hero" id="start">
+        <div class="eyebrow"><i></i> HARNESS · 小白到进阶 · 可复制的工程路径</div>
+        <h1>Harness<br>从 0 到<span class="hl">可验收</span></h1>
+        <p class="dek">你已经给 AI 装了模型、工具、Skills 和 MCP，但它还是会犯错。问题通常不在“前置装备不够”，而在于缺了一套能引导、约束、验证、恢复和交付的控制面。</p>
+        <div class="hero-actions"><a class="btn btn-primary" href="#first-loop">从第一步开始 ↓</a><a class="btn" href="../index.html?lang=zh#scorecard">看真实 Scorecard ↗</a></div>
+        <div class="hero-readout">
+          <div><span>CORE EQUATION</span><b>Agent = Model + Harness</b></div>
+          <div><span>BUILD</span><b>Guides + Sensors</b></div>
+          <div><span>PROVE</span><b>Evidence + Boundary</b></div>
+        </div>
+      </section>
+
+      <section class="guide-section" id="why">
+        <div class="section-kicker">01 / THE MISSING HALF</div>
+        <h2>为什么工具齐了，AI 还是会错？</h2>
+        <p>装好宿主、写好规则、接上 MCP，只能说明 Agent 拥有了更多输入和动作。它还不等于知道什么不能做，也不等于做完以后有人独立检查。</p>
+        <div class="two-col">
+          <article class="info-card"><span class="card-no green">A</span><h3>前置配置</h3><p>告诉 AI 你是谁、任务怎么做、有哪些工具。它解决的是“应该往哪走”。</p><code>CLAUDE.md · Skills · MCP · Subagent</code></article>
+          <article class="info-card"><span class="card-no purple">B</span><h3>后置控制</h3><p>检查它实际做了什么，在危险动作前阻断，在完成声明后要求证据。</p><code>Hook · Evaluator · CI · failures.md</code></article>
+        </div>
+        <div class="pull"><span>Agent 能跑起来只是起点。</span> Harness 要回答的是：<em>它能不能被可靠地管住？</em></div>
+      </section>
+
+      <section class="guide-section" id="layers">
+        <div class="section-kicker">02 / THE CONTROL PLANE</div>
+        <h2>Harness 的四层结构</h2>
+        <p>不要把 Harness 理解成一份配置文件。它至少包含引导、控制、证据和交付四层，每一层解决不同的失败。</p>
+        <div class="layer-stack">
+          <div class="layer layer-delivery"><b>04</b><span><strong>交付层</strong><small>产物、发布门、人工验收、外部副作用</small></span><em>交给别人之前</em></div>
+          <div class="layer layer-evidence"><b>03</b><span><strong>证据层</strong><small>Evaluator、Task Contract、CI、报告、失败台账</small></span><em>证明做对了</em></div>
+          <div class="layer layer-control"><b>02</b><span><strong>控制层</strong><small>Hook、安全门、状态机、权限、恢复</small></span><em>阻止不能做</em></div>
+          <div class="layer layer-guide"><b>01</b><span><strong>引导层</strong><small>CLAUDE.md、Skills、MCP、Subagent、上下文</small></span><em>告诉它怎么做</em></div>
+        </div>
+        <figure class="flow-figure"><img src="../assets/harness-check-flow.svg" alt="Harness Doctor 检查闭环流程图"><figcaption>构建 Harness 的方向是从引导走向交付；验收 Harness 的方向是从证据反查每一层是否成立。</figcaption></figure>
+      </section>
+
+      <section class="guide-section" id="first-loop">
+        <div class="section-kicker">03 / START SMALL</div>
+        <h2>从 0 开始：先做一个能闭环的版本</h2>
+        <p>小白不需要第一天接十个工具。先规定边界，再做一个能执行、能失败、能复查的小循环。</p>
+        <div class="step-list">
+          <article class="step-row"><b>01</b><div><h3>写任务边界</h3><p>明确输入、输出、允许读写的路径、危险动作和“什么证据出现后才算完成”。</p></div></article>
+          <article class="step-row"><b>02</b><div><h3>写第一版 CLAUDE.md</h3><p>只写稳定、具体、能判断对错的规则，不要从一开始堆一份愿望清单。</p></div></article>
+          <article class="step-row"><b>03</b><div><h3>把重复流程做成 Skill</h3><p>写清触发条件、输入、输出、必做步骤、人工边界和失败恢复；项目事实留在项目真源。</p></div></article>
+          <article class="step-row"><b>04</b><div><h3>给 MCP 做副作用分级</h3><p>只读、仓库内写入、外部写入、不可逆动作使用不同的确认策略。</p></div></article>
+          <article class="step-row"><b>05</b><div><h3>给完成声明加证据</h3><p>命令、退出码、产物路径、文件摘要和人工待确认边界，不能只写“已完成”。</p></div></article>
+        </div>
+        <pre class="code-block"><span class="comment"># 最小项目结构</span>
+my-harness/
+├── CLAUDE.md
+├── .agents/skills/
+├── .harness/scripts/verify.sh
+├── .harness/hooks/
+├── .harness/contracts/
+├── .harness/tests/fixtures/
+└── .harness/failures.md</pre>
+      </section>
+
+      <section class="guide-section" id="claude-md">
+        <div class="section-kicker">04 / GUIDES</div>
+        <h2>把 CLAUDE.md 从愿望清单写成规则系统</h2>
+        <p>规则要能被执行、被检查、被更新。真正有用的规则写清触发条件、动作、边界和完成证据。</p>
+        <pre class="code-block"><span class="syntax"># 项目工作规则</span>
+
+<span class="syntax">## 工作范围</span>
+- 只修改当前仓库内的源码和配置。
+- 生成物放入临时目录，截图验收后删除中间 HTML。
+
+<span class="syntax">## 危险动作</span>
+- 删除、强制推送、覆盖外部平台内容前必须先询问。
+- 不使用 <span class="string">`--no-verify`</span> 绕过检查。
+
+<span class="syntax">## 完成标准</span>
+- 运行对应的验证命令并保留退出码。
+- 报告修改文件、验证命令、结果和人工边界。</pre>
+        <div class="rule-grid">
+          <article><b>能判断</b><span>人或脚本可以判断是否违反。</span></article>
+          <article><b>写动作</b><span>写“何时做什么”，不写“注意安全”。</span></article>
+          <article><b>有证据</b><span>写完成门，不接受模型自报。</span></article>
+        </div>
+        <div class="ask"><span>RULE LIFECYCLE</span><b>真实失败 → 根因分类 → 规则/Hook/测试修复 → 正反例回归 → 记录修复证据</b></div>
+      </section>
+
+      <section class="guide-section" id="hooks">
+        <div class="section-kicker">05 / SENSORS</div>
+        <h2>Hook：把关键红线放到模型外</h2>
+        <p><code>CLAUDE.md</code> 告诉 Agent 规则是什么；Hook 在工具动作真正发生前执行规则。对不可逆动作，只让模型“记住不要做”是不够的。</p>
+        <div class="hook-grid">
+          <article class="hook-card"><b>01</b><h3>递归删除</h3><p>匹配 <code>rm -rf</code>、根目录和工作区外路径，默认阻断或询问。</p><span>PRETOOLUSE · BASH</span></article>
+          <article class="hook-card"><b>02</b><h3>强制推送</h3><p>覆盖 <code>--force</code>、<code>-f</code> 和保护分支，不只匹配一个字符串。</p><span>PRETOOLUSE · GIT</span></article>
+          <article class="hook-card"><b>03</b><h3>敏感文件</h3><p>`.env`、凭证、私钥和授权配置的写入必须进入确认链路。</p><span>WRITE · EDIT</span></article>
+        </div>
+        <div class="boundary-note"><b>配置存在 ≠ Hook 已触发</b><span>正例证明安全路径能继续；反例证明危险路径会被拦截；真实宿主烟测才证明宿主真的触发。</span></div>
+      </section>
+
+      <section class="guide-section" id="evaluator">
+        <div class="section-kicker">06 / INDEPENDENT REVIEW</div>
+        <h2>Subagent 与 Evaluator：不要让执行者给自己打分</h2>
+        <p>主 Agent 负责执行，独立角色负责检查，人负责真实宿主、视觉、事实和外部副作用。独立检查者不接受“我已经完成了”作为证据。</p>
+        <div class="role-flow"><span>主 Agent<br><small>执行任务</small></span><i>→</i><span>Reviewer<br><small>独立找问题</small></span><i>→</i><span>Evaluator<br><small>按契约重跑</small></span><i>→</i><span>人<br><small>确认边界</small></span></div>
+        <pre class="code-block"><span class="syntax">---</span>
+name: reviewer
+description: 独立检查 Agent 产物，不修改目标文件
+<span class="syntax">---</span>
+
+1. 不接受主 Agent 的“已完成”作为证据。
+2. 至少提出 3 个潜在问题，或明确检查范围。
+3. 自动化检查给出命令和退出码。
+4. 缺证据时返回 partial 或 blocked，不猜测通过。</pre>
+        <div class="contract-box"><span class="contract-label">TASK CONTRACT</span><p><b>目标和范围</b> · <b>期望产物</b> · <b>验证命令</b> · <b>文件摘要</b> · <b>安全边界</b> · <b>自动化证据</b> · <b>人工证据</b> · <b>未决风险</b></p></div>
+      </section>
+
+      <section class="guide-section" id="advanced">
+        <div class="section-kicker">07 / LONG-RUN WORK</div>
+        <h2>长任务的高级 Harness</h2>
+        <p>长任务的问题不是模型不会写，而是上下文会增长、状态会丢失、完成标准会变模糊。高级 Harness 用结构化状态替代对一段聊天的依赖。</p>
+        <div class="advanced-grid">
+          <article><span>01</span><h3>Context Reset</h3><p>重新装载目标、当前状态、已有证据、未闭风险和下一步允许动作。</p></article>
+          <article><span>02</span><h3>Sprint Contract</h3><p>把大任务拆成有输入、动作、检查、输出和 checkpoint 的短周期。</p></article>
+          <article><span>03</span><h3>组件退役</h3><p>逐个追问组件最初补了什么缺口；没有独立价值的脚手架应该被删除。</p></article>
+        </div>
+        <pre class="code-block"><span class="comment"># 一个 Sprint 的完成门</span>
+Sprint N
+├── 输入：上一个 checkpoint + 当前目标
+├── 动作：限定范围内的实现
+├── 检查：正例、反例、Evaluator
+├── 输出：产物 + 证据 + 未决风险
+└── checkpoint：可恢复状态</pre>
+      </section>
+
+      <section class="guide-section" id="failures">
+        <div class="section-kicker">08 / FEEDBACK LOOP</div>
+        <h2>失败台账：把失败变成下一次的防护</h2>
+        <p>`failures.md` 不是抱怨区，而是 Harness 的训练数据和回归入口。每条失败都要完成一次“现象到护栏”的转换。</p>
+        <div class="failure-loop"><span>失败现象</span><i>→</i><span>根因分类</span><i>→</i><span>规则 / Hook / 测试</span><i>→</i><span>正反例回归</span></div>
+        <pre class="code-block failure-code"><span class="syntax">## 2026-08-17 [误删草稿目录]</span>
+
+### 现象
+Agent 把“清理旧版本”解释成删除整个 drafts/。
+
+### 根因
+- 规则没有写精确删除范围；
+- 没有路径边界反例；
+- Hook 没有拦截危险删除。
+
+### 防再犯规则
+- 删除前先列出目标并逐项确认；
+- 递归删除默认 deny；
+- 保留一个应阻断、一个应放行的 fixture。</pre>
+        <div class="tag-row"><span>规则缺失</span><span>路由错误</span><span>控制缺失</span><span>验证缺失</span><span>状态丢失</span><span>宿主差异</span><span>外部副作用</span></div>
+      </section>
+
+      <section class="guide-section acceptance-section" id="acceptance">
+        <div class="section-kicker">09 / THE MISSING ACCEPTANCE LAYER</div>
+        <h2>原教程之外：怎么证明 Harness 真的成立？</h2>
+        <p>教程主要回答“如何搭建控制面”；Harness Doctor 站在控制面之外，检查它是否有可信证据。两者不是替代关系，而是构建和验收的上下游。</p>
+        <div class="compare-table">
+          <div class="compare-head"><span>构建问题</span><span>独立验收问题</span></div>
+          <div><span>有没有 `CLAUDE.md`？</span><span>规则是否可执行、可发现、无冲突？</span></div>
+          <div><span>有没有 Hook？</span><span>正反例是否命中，真实宿主是否触发？</span></div>
+          <div><span>有没有 CI？</span><span>CI 是否复现本地关键门禁，退出码是否真实？</span></div>
+          <div><span>有没有完成标准？</span><span>完成是否绑定产物摘要、命令和人工证据？</span></div>
+          <div><span>这次跑成功了吗？</span><span>working-tree、staged、CI 是否分别成功？</span></div>
+        </div>
+        <h3 class="subhead">五个必须分开的状态</h3>
+        <div class="state-grid">
+          <article><b>working-tree</b><span>当前机器和未提交改动的自动化结果。</span></article>
+          <article><b>staged</b><span>准备提交的那组改动的结果。</span></article>
+          <article><b>ci</b><span>干净环境和仓库随提交证据的结果。</span></article>
+          <article><b>smokeTest</b><span>真实宿主是否真的触发，未知就保持 unknown。</span></article>
+          <article><b>humanReview</b><span>视觉、事实、来源和外部副作用是否有人确认。</span></article>
+        </div>
+        <div class="hard-cap"><span>HARD GATE</span><b>没有验证入口、安全边界、CI、反例或完成证据，分数不能靠文档数量补回来。</b></div>
+      </section>
+
+      <section class="guide-section" id="maturity">
+        <div class="section-kicker">10 / MATURITY</div>
+        <h2>从初级到高级的成熟度路线</h2>
+        <p>分数是摘要，不是质量的替身。升级的本质是增加可以被别人复核的证据。</p>
+        <div class="maturity-table">
+          <div class="maturity-row head"><b>等级</b><b>名称</b><b>状态</b><b>下一步</b></div>
+          <div class="maturity-row"><b>L0</b><strong>叙事型</strong><span>靠说明和模型自报</span><em>建唯一验证入口</em></div>
+          <div class="maturity-row"><b>L1</b><strong>已搭建</strong><span>有规则，证据不完整</span><em>加安全门、正反例和 CI</em></div>
+          <div class="maturity-row"><b>L2</b><strong>可重复</strong><span>自动化回归可重跑</span><em>补契约、恢复和宿主矩阵</em></div>
+          <div class="maturity-row"><b>L3</b><strong>证据门控</strong><span>危险动作和完成由证据控制</span><em>补跨宿主和漂移管理</em></div>
+          <div class="maturity-row"><b>L4</b><strong>跨宿主治理</strong><span>多宿主、CI、恢复基本成形</span><em>补真实烟测和人工记录</em></div>
+          <div class="maturity-row"><b>L5</b><strong>可发布</strong><span>关键边界均有交付记录</span><em>持续 baseline 和回归</em></div>
+        </div>
+      </section>
+
+      <section class="guide-section" id="checklist">
+        <div class="section-kicker">11 / BEGINNER CHECKLIST</div>
+        <h2>一条适合小白的实践顺序</h2>
+        <p>每一步都留下一个能失败的例子，再进入下一步。这样你搭的是工程，而不是配置收藏夹。</p>
+        <div class="check-grid">
+          <label><input type="checkbox">规则有来源、作用域和退役条件</label>
+          <label><input type="checkbox">Skill 有触发、输入、输出和失败路径</label>
+          <label><input type="checkbox">MCP 按副作用分级</label>
+          <label><input type="checkbox">危险动作有模型外安全门</label>
+          <label><input type="checkbox">至少一个正例和一个反例</label>
+          <label><input type="checkbox">有唯一 verify.sh 和真实退出码</label>
+          <label><input type="checkbox">working-tree、staged、ci 分开检查</label>
+          <label><input type="checkbox">完成声明绑定产物、命令和摘要</label>
+          <label><input type="checkbox">有失败台账和恢复路径</label>
+          <label><input type="checkbox">宿主烟测和人工验收单独记录</label>
+        </div>
+      </section>
+
+      <section class="guide-section run-section" id="run">
+        <div class="section-kicker">12 / RUN THE DOCTOR</div>
+        <h2>运行一次真实检查</h2>
+        <p>在目标 Harness 仓库根目录执行。面向录屏用终端模式，面向网页和 CI 用 JSON 模式。</p>
+        <pre class="code-block terminal-code"><span class="prompt">$</span> python3 harness_score.py /path/to/harness \
+  --profile content-agent \
+  --mode working-tree --mode ci \
+  --format terminal --live --color always</pre>
+        <div class="run-proof">
+          <div class="run-proof-copy"><span class="learning-kicker">REAL RUN · 真实运行</span><h3>录屏是入口，证据才是结论。</h3><p>这段 Ghostty 录屏展示动态进度和颜色结果；完整维度、证据、退出码、宿主边界和 Profile 仍由 JSON Scorecard 承载。</p><a class="btn btn-primary" href="../index.html?lang=zh#scorecard">打开交互式 Scorecard →</a></div>
+          <img src="../assets/harness-doctor-run.gif" loading="lazy" decoding="async" alt="Harness Doctor 真实运行录屏">
+        </div>
+        <div class="source-note"><b>来源与边界</b><span>入门到高级主线整理自《Harness 小白完整入门教程（搭建你的挽具工程）》36 页 PDF；实验数字和比例是案例，不是所有项目的永久阈值。自动化通过也不等于真实宿主和人工验收已完成。</span><a href="https://x.com/ai_xiaomu/status/2061003331531862349">查看原始文章入口 ↗</a></div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <div class="guide-wrap footer-inner"><a class="guide-brand" href="../index.html?lang=zh"><span class="brand-wordmark">hekouwang</span><span class="brand-divider">/</span><span class="brand-name">Harness <b>Doctor</b></span></a><span>独立验收层 · MIT · 2026</span><a href="../index.html?lang=zh">返回产品页 ↑</a></div>
+  </footer>
+  <script src="assets/guide.js"></script>
+</body>
+</html>

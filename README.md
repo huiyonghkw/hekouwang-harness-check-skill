@@ -6,6 +6,10 @@
 
 这是一个独立发布的 Agent Skill 源仓库。它不重新发明测试框架，也不把“检查脚本运行过”包装成“任务已经完成”；它把目标 Harness 已有的检查能力编排成 Agent 可以稳定执行、解释和交接的工作流。
 
+产品展示名暂定为 **hekouwang Harness Doctor**，简称 **Harness Doctor**；产品介绍页：[hekouwang Harness Doctor — 让 Harness 不只会跑，还能被证明](https://huiyonghkw.github.io/hekouwang-harness-check-skill/?lang=zh)。页面内置交互式 Scorecard、宿主矩阵、证据台账和 JSON 下载；本地预览说明见 [`website/README.md`](./website/README.md)。
+
+如果你刚接触 Harness，先读 [`Harness 从 0 到可验收`](./docs/harness-from-zero-to-advanced.zh-CN.md)，也可以直接打开 [Guide 文档站](https://huiyonghkw.github.io/hekouwang-harness-check-skill/guide/?lang=zh)：它把“Agent = Model + Harness”、Guides/Sensors、`CLAUDE.md`、Hook、Subagent、Evaluator、Context Reset、Sprint Contract 和失败台账串成一条从入门到高级的学习路线，并补充如何用证据验收这些组件。
+
 本仓库提供的是检查编排层，不捆绑某个具体项目的 `.harness/` 真源。接入项目需要提供自己的 `verify.sh`、契约、正反例和人工验收边界；[hekouwang-content-agent](https://github.com/huiyonghkw/hekouwang-content-agent) 是本 Skill 的首个参考实现。
 
 ## 目录
@@ -13,6 +17,7 @@
 - [它解决什么问题](#它解决什么问题)
 - [能力边界](#能力边界)
 - [Harness Scorecard 打分系统](#harness-scorecard-打分系统)
+- [Harness 从 0 到可验收](#harness-从-0-到可验收)
 - [七个核心验收优势](#七个核心验收优势)
 - [快速开始](#快速开始)
 - [三种验证模式](#三种验证模式)
@@ -71,6 +76,12 @@ python3 harness_score.py /path/to/harness \
   --format markdown \
   --mode working-tree --mode ci
 
+# 录制或现场演示：动态进度 + 彩色终端 Scorecard
+python3 harness_score.py /path/to/harness \
+  --profile content-agent \
+  --mode working-tree --mode ci \
+  --format terminal --live --color always
+
 # 对内容 Agent 叠加领域 Profile（通用分和领域分分别输出）
 python3 harness_score.py /path/to/harness \
   --profile content-agent --format json
@@ -92,6 +103,8 @@ python3 harness_score.py /path/to/harness \
 - `profile`：可插拔的领域评分；当前内置 `content-agent`，不把内容规则硬编码进通用 100 分。领域分还会标注 `evidenceKind` 和独立置信度，规则写进文档不等于运行证据。
 - `comparison`：可选的 baseline 差异，供网页/GIF 展示修复前后的分数变化。
 
+`--format terminal --live` 是面向人的演示模式：检查期间会在 stderr 显示动态状态，完成后渲染彩色分数、维度、退出码、治理数量和宿主边界。`--format json` 与 `--format markdown` 不会把 ANSI 颜色写入报告，适合 CI、网页和归档。
+
 评分器会自动降权只有关键词或文档语义的线索；它们可以帮助发现问题，但不能替代脚本、契约、正反例或运行结果。这条规则是为了防止“README 看起来很完整”被误报成“Harness 已经可靠”。
 
 ### 与 DeepSeek Harness 的差异
@@ -100,6 +113,19 @@ python3 harness_score.py /path/to/harness \
 
 完整对标与产品差异化方案见 [`references/market-positioning.md`](./references/market-positioning.md)。
 网页和 GIF 的数据字段、分镜与离线展示边界见 [`references/demo-storyboard.md`](./references/demo-storyboard.md)。
+
+## Harness 从 0 到可验收
+
+PDF 教程解决的是“如何搭建 Harness”，本仓库再把它接到“如何验收”：
+
+| 学习阶段 | 重点 | 最小产物 |
+| --- | --- | --- |
+| 入门 | 理解 `Agent = Model + Harness`，区分 Guides 与 Sensors | 一份具体的 `CLAUDE.md` |
+| 初级 | Skill、MCP、Hook 和 Subagent 的职责边界 | 一个可阻断的危险动作反例 |
+| 中级 | Evaluator、Task Contract、失败台账和 CI | `verify.sh` + 正反例 + 退出码 |
+| 高级 | Context Reset、Sprint Contract、恢复、观测和宿主烟测 | 可复核的 Scorecard 与人工边界 |
+
+完整的中文学习指南见 [`docs/harness-from-zero-to-advanced.zh-CN.md`](./docs/harness-from-zero-to-advanced.zh-CN.md)。它保留原教程的构建顺序，同时明确：配置存在不等于触发、自动化通过不等于人工完成、检查数量不等于质量分。
 
 ## 七个核心验收优势
 
@@ -181,7 +207,7 @@ bash .harness/scripts/verify.sh --ci
 | Episode | `test-episode.sh` | 状态转移、锁、原子写入、事件链、检查点和独立完成门 |
 | Failure Ledger | `test-failure-ledger.sh` | 失败记录、回归证据和退役条件不能缺失 |
 
-当前 Runtime Governance 的历史基线是本地 722、CI 165 项；纳入本 Skill 的组件和路由断言后，当前实测为本地 728、CI 171 项。它们是断言数量，不是质量分数；新增断言后必须以日志为准。
+当前 Runtime Governance 的历史基线是本地 722、CI 165 项；独立 Skill 早期参考快照曾为本地 728、CI 171 项。当前具体仓库必须以真实日志为准；本产品页展示的 `hekouwang-content-agent` 运行快照为本地 734、CI 177 项。它们都是断言数量，不是质量分数。
 
 ## 流程图
 
@@ -258,7 +284,7 @@ Runtime Governance：本地 N 项 / CI M 项 / 未输出
 - 没有输出、输出被截断或命令没有真正执行，不能解释为通过；
 - 自动化通过只说明编码过的机械性断言通过；
 - 真实宿主烟测和人工内容验收没有证据时，必须写“待补”；
-- 722/165 或 728/171 都不能写成“分数”或“所有事情完成”。
+- 722/165、728/171 或 734/177 都不能写成“分数”或“所有事情完成”。
 
 ## 安全不变量
 

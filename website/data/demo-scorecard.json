@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-08-17",
+  "target": "hekouwang-content-agent",
+  "targetLabel": "真实扫描示例 · 内容 Agent",
+  "score": {
+    "value": 86,
+    "max": 100,
+    "confidence": 71,
+    "decision": "CONDITIONAL",
+    "maturity": {
+      "id": "L4",
+      "name": "跨宿主治理",
+      "nameEn": "Cross-host governance",
+      "description": "多宿主、CI、恢复和失败闭环基本成形。"
+    },
+    "caps": []
+  },
+  "dimensions": [
+    { "id": "instruction_routing", "name": "规则与路由", "nameEn": "Rules & routing", "weight": 8, "earned": 7, "status": "partial", "evidence": ["AGENTS.md", "README.md", ".harness/contracts/workflow-profiles.json:8"] },
+    { "id": "verification", "name": "验证入口", "nameEn": "Verification entry", "weight": 12, "earned": 12, "status": "pass", "evidence": [".harness/scripts/verify.sh", "bash .harness/scripts/verify.sh --working-tree"] },
+    { "id": "ci_parity", "name": "CI 可复现性", "nameEn": "CI parity", "weight": 10, "earned": 10, "status": "pass", "evidence": [".github/workflows/quality.yml:26", "bash .harness/scripts/verify.sh --ci"] },
+    { "id": "host_adapters", "name": "宿主适配", "nameEn": "Host adapters", "weight": 8, "earned": 8, "status": "pass", "evidence": [".claude/settings.json", ".cursor/hooks.json", ".codebuddy/settings.json", ".codex/hooks.json"] },
+    { "id": "safety_enforcement", "name": "安全执行", "nameEn": "Safety enforcement", "weight": 12, "earned": 10, "status": "partial", "evidence": [".harness/hooks/safety-gate.py", ".harness/tests/test-safety-gate.sh:8"] },
+    { "id": "evidence_contracts", "name": "证据与完成门", "nameEn": "Evidence contracts", "weight": 12, "earned": 10, "status": "partial", "evidence": [".harness/contracts/task-contract.json:12", ".harness/scripts/evaluate-task.py:108"] },
+    { "id": "recovery_state", "name": "状态与恢复", "nameEn": "Recovery state", "weight": 8, "earned": 6, "status": "partial", "evidence": [".harness/scripts/episode.py", ".harness/contracts/episode-state.json:5"] },
+    { "id": "observability", "name": "可观测性", "nameEn": "Observability", "weight": 8, "earned": 5, "status": "partial", "evidence": [".harness/scripts/observability.py", ".harness/tests/test-observability.sh:9"] },
+    { "id": "regression", "name": "正反例回归", "nameEn": "Positive/negative regression", "weight": 8, "earned": 8, "status": "pass", "evidence": [".harness/tests/fixtures", ".harness/tests/test-runtime-governance.sh:19"] },
+    { "id": "lifecycle_drift", "name": "生命周期与漂移", "nameEn": "Lifecycle & drift", "weight": 6, "earned": 5, "status": "partial", "evidence": [".harness/contracts/component-registry.json", ".harness/scripts/sync-agent-adapters.sh:8"] },
+    { "id": "docs_portability", "name": "文档与可移植性", "nameEn": "Docs & portability", "weight": 4, "earned": 3, "status": "partial", "evidence": ["README.md", ".harness/tests/test-safety-gate.sh:45"] },
+    { "id": "human_boundary", "name": "人工边界", "nameEn": "Human boundary", "weight": 4, "earned": 2, "status": "partial", "evidence": ["README.md:124", ".harness/contracts/component-registry.json:38"] }
+  ],
+  "executions": [
+    { "mode": "working-tree", "modeEn": "working-tree", "command": "bash .harness/scripts/verify.sh --working-tree", "executed": true, "exitCode": 0, "passed": true, "durationSeconds": 9.836, "governanceCounts": [734], "failureLabels": [] },
+    { "mode": "ci", "modeEn": "CI", "command": "bash .harness/scripts/verify.sh --ci", "executed": true, "exitCode": 0, "passed": true, "durationSeconds": 9.386, "governanceCounts": [177], "failureLabels": [] }
+  ],
+  "hosts": [
+    { "host": "Claude Code", "short": "Claude", "configured": true, "smokeTest": "unknown", "evidence": [".claude/settings.json", ".claude/hooks"] },
+    { "host": "Cursor", "short": "Cursor", "configured": true, "smokeTest": "unknown", "evidence": [".cursor/hooks.json", ".cursor/rules"] },
+    { "host": "CodeBuddy", "short": "CodeBuddy", "configured": true, "smokeTest": "unknown", "evidence": [".codebuddy/settings.json", ".codebuddy/skills"] },
+    { "host": "Codex", "short": "Codex", "configured": true, "smokeTest": "unknown", "evidence": [".codex/hooks.json", ".codex/config.toml"] }
+  ],
+  "profile": {
+    "id": "content-agent",
+    "name": "内容 Agent 工作流",
+    "nameEn": "Content-agent workflow",
+    "score": { "value": 35, "max": 35, "confidence": 35, "decision": "CONDITIONAL" },
+    "controls": [
+      { "name": "已发布状态门", "nameEn": "Published-status gate", "earned": 5, "weight": 5, "evidenceKind": "policy" },
+      { "name": "来源与事实证据", "nameEn": "Source provenance", "earned": 5, "weight": 5, "evidenceKind": "policy" },
+      { "name": "渠道内容合同", "nameEn": "Channel contracts", "earned": 5, "weight": 5, "evidenceKind": "policy" },
+      { "name": "生成物边界", "nameEn": "Artifact boundary", "earned": 4, "weight": 4, "evidenceKind": "policy" },
+      { "name": "视觉验收边界", "nameEn": "Visual acceptance", "earned": 4, "weight": 4, "evidenceKind": "policy" },
+      { "name": "人工内容审阅", "nameEn": "Human content review", "earned": 4, "weight": 4, "evidenceKind": "policy" },
+      { "name": "外部副作用门", "nameEn": "Side-effect gate", "earned": 4, "weight": 4, "evidenceKind": "policy" },
+      { "name": "预检与交付门", "nameEn": "Precheck & delivery", "earned": 4, "weight": 4, "evidenceKind": "policy" }
+    ]
+  },
+  "findings": [
+    { "severity": "P2", "title": "规则与路由仍有待补证", "titleEn": "Rules & routing need evidence", "detail": "发现入口和路由，但部分信号来自文档/启发式，不足以把维度打满。" },
+    { "severity": "P2", "title": "真实宿主烟测仍是 unknown", "titleEn": "Real-host smoke tests remain unknown", "detail": "四个宿主配置都存在，但配置存在不等于 Hook 已被真实宿主触发。" },
+    { "severity": "P2", "title": "内容 Profile 通过不等于运行时已证明", "titleEn": "Profile policy is not runtime proof", "detail": "内容治理项当前主要是 policy 证据，独立置信度仍为 35。" }
+  ],
+  "workspace": { "dirtyEntries": 141 },
+  "comparison": { "before": 72, "after": 86, "delta": 14, "label": "演示数据：修复前后 baseline 对比" }
+}

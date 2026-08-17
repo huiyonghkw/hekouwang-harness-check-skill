@@ -34,6 +34,15 @@ jobs:
           test -f harness_score.py
           test -f tests/test_harness_score.py
           test -f assets/harness-check-flow.svg
+          test -f website/index.html
+          test -f website/assets/site.css
+          test -f website/assets/app.js
+          test -f website/data/demo-scorecard.json
+          test -f website/assets/fonts/GoogleSans-Finance-Latin.woff2
+          test -f website/assets/fonts/GoogleSansText-Regular.ttf
+          test -f website/assets/fonts/GoogleSansText-Medium.ttf
+          test -f website/assets/fonts/GoogleSansFlex-Regular.ttf
+          test -f website/assets/fonts/NotoSansSC-Variable-FULL.woff2
           grep -q '^name: hekouwang-harness-check-skill$' SKILL.md
           grep -q 'working-tree' SKILL.md
           grep -q 'staged' SKILL.md
@@ -41,6 +50,9 @@ jobs:
           grep -q 'hekouwang-harness-check-skill' README.en.md
           python3 -c 'import xml.etree.ElementTree as ET; ET.parse("assets/harness-check-flow.svg")'
           python3 -c 'import json; json.load(open("references/score-rubric.json")); json.load(open("references/scorecard-schema.json"))'
+          python3 -c 'import json; json.load(open("website/data/demo-scorecard.json"))'
+          python3 -c 'from html.parser import HTMLParser; HTMLParser().feed(open("website/index.html").read())'
+          node --check website/assets/app.js
 
       - name: Test Harness Scorecard
         shell: bash
