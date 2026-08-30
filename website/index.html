@@ -3,126 +3,137 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="一个让 Agent Harness 的规则、自动化与人工边界都能被复查的开源检查器。">
+    <meta name="description" content="Harness Check 是给已有 Agent Harness 做验收的开源 Skill：验证规则是否真执行、检查能否重跑，并把人工边界明确留下。">
     <meta name="theme-color" content="#faf8f3">
-    <title>Harness Check | 让 Agent 工作经得起复查</title>
-    <link rel="stylesheet" href="assets/site.css">
+    <title>Harness Check | 别只听 Agent 说“做完了”</title>
+    <link rel="stylesheet" href="assets/site.css?v=20260830-v4-glass-flow-size">
+    <style>.flow-figure img{width:min(840px,100%);margin-inline:auto}</style>
   </head>
   <body>
     <a class="skip-link" href="#main"><span class="zh">跳到正文</span><span class="en">Skip to content</span></a>
     <header class="site-header">
       <a class="wordmark" href="./" aria-label="Harness Check 首页">Harness Check</a>
       <nav aria-label="页面导航">
-        <a href="#method"><span class="zh">怎么检查</span><span class="en">Method</span></a>
-        <a href="#limits"><span class="zh">检查边界</span><span class="en">Limits</span></a>
-        <a href="guide/index.html"><span class="zh">完整 Guide</span><span class="en">Guide</span></a>
+        <a href="./" aria-current="page"><span class="zh">产品</span><span class="en">Product</span></a>
+        <a href="guide/index.html"><span class="zh">文档</span><span class="en">Guide</span></a>
+        <a href="#method"><span class="zh">它怎么检查</span><span class="en">How it works</span></a>
+        <a href="https://github.com/huiyonghkw/hekouwang-harness-check-skill">GitHub</a>
       </nav>
       <div class="header-actions">
-        <button class="language-toggle" type="button" aria-label="切换语言">EN</button>
-        <a class="github-link" href="https://github.com/huiyonghkw/hekouwang-harness-check-skill">GitHub <span aria-hidden="true">↗</span></a>
+        <div class="language-switch" role="group" aria-label="切换语言">
+          <button class="language-toggle" type="button" data-language="en" aria-pressed="false">EN</button>
+          <button class="language-toggle" type="button" data-language="zh" aria-pressed="true">中文</button>
+        </div>
       </div>
     </header>
     <main id="main">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="kicker"><span class="zh">开源 Agent Harness 检查器</span><span class="en">Open-source checks for Agent Harnesses</span></p>
-          <h1 id="hero-title"><span class="zh">让 Agent 的工作<br>经得起复查。</span><span class="en">Make Agent work<br>reviewable.</span></h1>
-          <p class="hero-lead"><span class="zh">它不评模型聪不聪明。它检查规则有没有真的执行、自动化能不能重跑，以及哪些结果仍需人在真实宿主里确认。</span><span class="en">It does not grade a model. It checks whether rules run, automation can be repeated, and what still needs a human in the real host.</span></p>
+          <p class="kicker"><span class="zh">给已有 Agent Harness 的开源验收 Skill</span><span class="en">An open-source verification skill for existing Agent Harnesses</span></p>
+          <h1 id="hero-title"><span class="zh"><span class="title-line">别只听 Agent 说</span><span class="title-line">“<span class="hl">做完了</span>”。</span></span><span class="en"><span class="title-line">Do not just trust</span><span class="title-line">an Agent saying <span class="hl">“done.”</span></span></span></h1>
+          <p class="hero-lead"><span class="zh">Harness Check 是一层独立验收：它检查你已有的规则是否真的接入执行、检查能否在本地和 CI 重跑，并把还需要真人确认的地方明确留出来。</span><span class="en">Harness Check is an independent verification layer. It checks that your rules are truly wired to execution, can run again locally and in CI, and clearly leaves the work that still needs a person.</span></p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#method"><span class="zh">看看它怎么检查</span><span class="en">See the method</span></a>
-            <a class="button button-text" href="guide/index.html"><span class="zh">从 Guide 开始</span><span class="en">Start with the guide</span> <span aria-hidden="true">→</span></a>
+            <a class="button button-primary" href="#method"><span class="zh">三分钟看懂它怎么工作</span><span class="en">See how it works</span></a>
+            <a class="button button-text" href="#limits"><span class="zh">我适合用它吗？</span><span class="en">Is it for me?</span> <span aria-hidden="true">→</span></a>
           </div>
+          <p class="hero-note"><span class="zh">它不搭建 Runtime，不给模型打分，也不把人工判断伪装成自动化。</span><span class="en">It does not build a runtime, grade models, or disguise human judgement as automation.</span></p>
         </div>
-        <figure class="hero-image">
-          <img src="assets/evidence-still-life.webp" width="1536" height="1024" alt="一叠用于核验的纸质检查表">
-          <figcaption><span class="zh">不是漂亮的仪表盘，而是一份能回看的证据。</span><span class="en">Not a pretty dashboard. A trail you can revisit.</span></figcaption>
-        </figure>
+        <aside class="verification-panel" aria-label="Harness Check 的证据结构">
+          <div class="panel-topline"><span>HARNESS CHECK</span><span>LOCAL PATH</span></div>
+          <div class="panel-title"><span class="zh">一次检查，给你三份事实。</span><span class="en">One run gives you three facts.</span></div>
+          <div class="proof-grid">
+            <div><small>01</small><b><span class="zh">哪些规则真在运行</span><span class="en">Which rules truly run</span></b><p><span class="zh">Hook、任务合同、安全门</span><span class="en">Hooks, task contracts, gates</span></p></div>
+            <div><small>02</small><b><span class="zh">哪里失败，怎样重跑</span><span class="en">What failed and how to rerun</span></b><p><span class="zh">模式、退出码、失败标签</span><span class="en">Modes, exits, failure labels</span></p></div>
+            <div><small>03</small><b><span class="zh">还有什么不能宣称完成</span><span class="en">What cannot yet be claimed</span></b><p><span class="zh">真实宿主与人工验收</span><span class="en">Real hosts and human review</span></p></div>
+          </div>
+          <div class="panel-footer"><span class="status-dot" aria-hidden="true"></span><span class="zh">不是一张总分卡，而是一条可追问的证据链。</span><span class="en">Not a scorecard — a chain of evidence you can question.</span></div>
+        </aside>
       </section>
       <section class="orientation" aria-label="检查范围">
-        <p><strong>01</strong><span class="zh">规则是否接上了真正的执行入口</span><span class="en">Are rules wired to a real execution path?</span></p>
-        <p><strong>02</strong><span class="zh">每次检查是否能得到同样可解释的结果</span><span class="en">Can each check be repeated and explained?</span></p>
-        <p><strong>03</strong><span class="zh">自动化没有覆盖的地方，是否被明确留下</span><span class="en">Are gaps beyond automation plainly left visible?</span></p>
+        <p><strong>01</strong><span class="zh">“写了规则”，不等于规则真的能拦住错误。</span><span class="en">A written rule does not mean it can stop an error.</span></p>
+        <p><strong>02</strong><span class="zh">“本机绿了”，不等于 CI 和下一次也能复现。</span><span class="en">“Green locally” does not mean CI or the next run can reproduce it.</span></p>
+        <p><strong>03</strong><span class="zh">“脚本跑过”，不等于真实宿主和人工验收已经完成。</span><span class="en">“A script ran” does not mean real-host and human review are complete.</span></p>
       </section>
       <section id="method" class="method section" aria-labelledby="method-title">
         <div class="section-intro">
-          <p class="kicker"><span class="zh">检查方法</span><span class="en">The method</span></p>
-          <h2 id="method-title"><span class="zh">一次检查，先把问题问对。</span><span class="en">One audit starts with the right questions.</span></h2>
+          <p class="kicker"><span class="zh">它到底检查什么</span><span class="en">What it actually checks</span></p>
+          <h2 id="method-title"><span class="zh">它不检查“结果好不好”。<br>它检查“工作流是否可信”。</span><span class="en">It does not judge the output.<br>It checks whether the workflow is trustworthy.</span></h2>
         </div>
         <div class="method-layout">
           <article class="method-anchor">
             <p class="method-number">A</p>
-            <h3><span class="zh">写在文档里的规则，真的会拦住错误吗？</span><span class="en">Can a written rule actually stop an error?</span></h3>
-            <p><span class="zh">Harness Check 会沿着 Hook、任务合同和安全门去找执行证据。只有提示词，没有可执行入口，不算通过。</span><span class="en">Harness Check follows hooks, task contracts, and safety gates for execution evidence. A prompt alone is not a pass.</span></p>
+            <h3><span class="zh">规则，真的接到了动作上吗？</span><span class="en">Are rules connected to actions?</span></h3>
+            <p><span class="zh">它沿着 Skill、Hook、任务合同和安全门找执行证据。只有提示词或 README，没有可执行入口，不算受控。</span><span class="en">It follows Skills, hooks, task contracts, and safety gates for execution evidence. A prompt or README without an executable entry is not control.</span></p>
           </article>
           <div class="method-notes">
             <article>
               <p class="method-number">B</p>
-              <h3><span class="zh">这次绿了，下次还绿吗？</span><span class="en">Will it pass the same way next time?</span></h3>
-              <p><span class="zh">检查器要求正反例、退出码和可定位的失败标签，让 CI 的结果不是一句“已完成”。</span><span class="en">Fixtures, exit codes, and named failures keep CI results from collapsing into a vague “done”.</span></p>
+              <h3><span class="zh">失败时，能定位也能重跑吗？</span><span class="en">Can failure be located and rerun?</span></h3>
+              <p><span class="zh">它按工作区、暂存区和 CI 选择唯一入口，保留正反例、真实退出码和失败标签，不把一句“已完成”当报告。</span><span class="en">It chooses one entry for the working tree, staged changes, or CI, preserving fixtures, real exit codes, and failure labels instead of a vague “done”.</span></p>
             </article>
             <article>
               <p class="method-number">C</p>
-              <h3><span class="zh">哪些地方不能由自动化替人担保？</span><span class="en">What should automation never promise for a person?</span></h3>
-              <p><span class="zh">真实宿主烟测、发布判断和人工观感会被单独列出。没有做过，就不会被伪装成通过。</span><span class="en">Real-host smoke tests, release calls, and human judgement stay separate. Untested work is never dressed up as passed.</span></p>
+              <h3><span class="zh">哪些事仍然必须由人确认？</span><span class="en">What still needs a person?</span></h3>
+              <p><span class="zh">真实宿主触发、外部副作用、视觉与发布判断会单独列出。没有证据，就写“待补”，绝不伪装成通过。</span><span class="en">Real-host triggers, external side effects, visual review, and release calls stay separate. Without evidence, they remain “pending”, never passed.</span></p>
             </article>
           </div>
         </div>
         <figure class="flow-figure">
-          <img src="assets/harness-check-flow.svg" alt="Harness Check 从请求、检查入口到证据和人工边界的流程图">
-          <figcaption><span class="zh">检查的目标不是堆更多规则，而是让每条规则都有可复查的去处。</span><span class="en">The goal is not more rules. It is a reviewable destination for each one.</span></figcaption>
+          <img src="assets/harness-check-flow.svg?v=20260830-v4-sequence" alt="Harness Check 从请求、检查入口到证据和人工边界的标准时序图">
+          <figcaption><span class="zh">从请求到交付：每一条线都代表一个可执行的检查入口或必须说明的边界。</span><span class="en">From request to delivery: each line is an executable check entry or a boundary that must be stated.</span></figcaption>
         </figure>
       </section>
       <section class="evidence section" aria-labelledby="evidence-title">
         <div class="evidence-copy">
-          <p class="kicker"><span class="zh">真实输出</span><span class="en">A real run</span></p>
-          <h2 id="evidence-title"><span class="zh">结果要能看见来路。</span><span class="en">A result should show where it came from.</span></h2>
-          <p><span class="zh">同一套检查分为工作区、暂存区和 CI 三种模式。报告会把自动化结果、已有证据与仍待人工确认的事项分开，而不是合成一个看似权威的总分。</span><span class="en">The same suite runs for the working tree, staged changes, and CI. Its report separates automated results, recorded evidence, and human follow-ups instead of inventing one authoritative score.</span></p>
-          <a class="text-link" href="https://github.com/huiyonghkw/hekouwang-harness-check-skill/blob/main/references/score-rubric.json"><span class="zh">查看检查口径</span><span class="en">Read the rubric</span> <span aria-hidden="true">→</span></a>
+          <p class="kicker"><span class="zh">你最后拿到什么</span><span class="en">What you get at the end</span></p>
+          <h2 id="evidence-title"><span class="zh">不是“通过”。<br>是一份能交接的判断。</span><span class="en">Not just “passed.”<br>A decision someone else can take over.</span></h2>
+          <p><span class="zh">报告会明确写出：在哪个模式运行、自动化通过还是失败、失败怎样复现、宿主烟测是否做过、人工验收还缺什么。它不会把这些压成一个看似权威的总分。</span><span class="en">The report states the run mode, automated pass or failure, how to reproduce it, whether host smoke tests happened, and what human review remains. It does not compress these into a pretend-authoritative score.</span></p>
+          <a class="text-link" href="https://github.com/huiyonghkw/hekouwang-harness-check-skill/blob/main/references/check-matrix.md"><span class="zh">查看检查范围与结论口径</span><span class="en">Read the check matrix</span> <span aria-hidden="true">→</span></a>
         </div>
         <figure class="run-figure">
           <img src="assets/harness-doctor-run.gif" alt="Harness Check 的真实命令行运行录像">
-          <figcaption><span class="zh">真实运行录像。它是证据的一部分，不是全部证据。</span><span class="en">A recorded run. Evidence, but never all the evidence.</span></figcaption>
+          <figcaption><span class="zh">一次真实运行：命令输出是自动化证据；真实宿主和人工验收仍会被单独记录。</span><span class="en">A real run: command output is automated evidence; host and human verification remain separate records.</span></figcaption>
         </figure>
       </section>
       <section class="start section" aria-labelledby="start-title">
         <div class="section-intro">
-          <p class="kicker"><span class="zh">从一条命令开始</span><span class="en">Start with one command</span></p>
-          <h2 id="start-title"><span class="zh">先检查你眼前这份工作区。</span><span class="en">Check the workspace in front of you.</span></h2>
-          <p><span class="zh">在已经接入 Harness 的项目根目录运行。它不会替你的项目生成规则，而是检查你已经声明的规则是否形成闭环。</span><span class="en">Run this at the root of a project that already has a Harness. It will not invent your rules. It checks whether the rules you declared form a loop.</span></p>
+          <p class="kicker"><span class="zh">怎么开始</span><span class="en">How to start</span></p>
+          <h2 id="start-title"><span class="zh">先验证一份已有的 Harness。</span><span class="en">Verify one Harness you already have.</span></h2>
+          <p><span class="zh">在项目根目录运行这条命令。前提是项目已经有自己的 Harness 验证入口、测试和规则真源；Harness Check 不会替你凭空生成这些东西。</span><span class="en">Run this at your project root. The project must already have its own Harness verification entry, tests, and rule sources; Harness Check will not invent them for you.</span></p>
         </div>
         <div class="command-block">
           <code>bash .harness/scripts/verify.sh --working-tree</code>
           <button class="copy-command" type="button" data-command="bash .harness/scripts/verify.sh --working-tree"><span class="zh">复制</span><span class="en">Copy</span></button>
         </div>
-        <p class="start-footnote"><span class="zh">还没有 Harness？先读 <a href="guide/index.html">中文 Guide</a>，再从仓库 README 里的安装方式接入。</span><span class="en">No Harness yet? Read the <a href="guide/index.html">guide</a>, then follow the repository README to install it.</span></p>
+        <p class="start-footnote"><span class="zh">还没有 Harness？先读 <a href="guide/index.html">中文 Guide</a> 建一个最小闭环；已有 Harness，再按仓库 README 安装这个 Skill。</span><span class="en">No Harness yet? Read the <a href="guide/index.html">guide</a> to build a minimal loop. If you have one, install this skill from the repository README.</span></p>
       </section>
       <section id="limits" class="limits section" aria-labelledby="limits-title">
         <div class="section-intro">
-          <p class="kicker"><span class="zh">检查边界</span><span class="en">Honest limits</span></p>
-          <h2 id="limits-title"><span class="zh">自动化负责验证，<br>但不冒充判断。</span><span class="en">Automation verifies. It does not impersonate judgement.</span></h2>
+          <p class="kicker"><span class="zh">它适合谁，不适合谁</span><span class="en">Who it is — and is not — for</span></p>
+          <h2 id="limits-title"><span class="zh">你已经在维护 Agent 工作流，<br>才会真正需要它。</span><span class="en">It earns its place when<br>you maintain an Agent workflow.</span></h2>
         </div>
         <div class="limits-grid">
           <article>
-            <h3><span class="zh">它可以确认</span><span class="en">It can confirm</span></h3>
+            <h3><span class="zh">适合：已有 Harness，开始需要可信交付</span><span class="en">For: an existing Harness that needs trustworthy delivery</span></h3>
             <ul>
-              <li><span class="zh">配置、链接和脚本是否真实存在</span><span class="en">Whether config, links, and scripts exist</span></li>
-              <li><span class="zh">正反例与退出码是否按约定工作</span><span class="en">Whether fixtures and exit codes work as agreed</span></li>
-              <li><span class="zh">CI 是否能重跑同一批自动化检查</span><span class="en">Whether CI can repeat the same automated checks</span></li>
+              <li><span class="zh">你已有规则、Hook、测试或 CI，却无法确认它们有没有一起工作</span><span class="en">You have rules, hooks, tests, or CI but cannot tell if they work together</span></li>
+              <li><span class="zh">你需要区分本机、暂存区、CI 和真实宿主的结论</span><span class="en">You need distinct conclusions for local work, staged changes, CI, and real hosts</span></li>
+              <li><span class="zh">你希望失败能定位，完成能交接，而不是依赖 Agent 自报</span><span class="en">You want failures located and completion handed off, not self-reported by an Agent</span></li>
             </ul>
           </article>
           <article>
-            <h3><span class="zh">它不会声称</span><span class="en">It will not claim</span></h3>
+            <h3><span class="zh">不替代：搭建 Runtime、写规则或人的判断</span><span class="en">Not a replacement for a runtime, your rules, or people</span></h3>
             <ul>
-              <li><span class="zh">真实宿主里的每种交互都已测试</span><span class="en">Every real-host interaction was tested</span></li>
-              <li><span class="zh">内容质量、审美或发布结果已经被机器定论</span><span class="en">Content, taste, or publishing outcomes are settled by a machine</span></li>
-              <li><span class="zh">未被证据支持的“全部完成”</span><span class="en">“Complete” without supporting evidence</span></li>
+              <li><span class="zh">它不是 DeepSeek Harness 一类的 Agent Runtime，不负责把模型和工具跑起来</span><span class="en">It is not an Agent Runtime such as DeepSeek Harness; it does not run models and tools</span></li>
+              <li><span class="zh">它不会替项目写业务规则、测试或唯一验证入口</span><span class="en">It does not write your domain rules, tests, or canonical verification entry</span></li>
+              <li><span class="zh">它不会宣称真实宿主、视觉、内容质量或外部副作用已经由机器定论</span><span class="en">It never claims that real hosts, visual quality, content quality, or external effects are machine-settled</span></li>
             </ul>
           </article>
         </div>
       </section>
     </main>
     <footer class="site-footer">
-      <p><span class="zh">为需要长期维护 Agent 工作流的人而做。</span><span class="en">Built for people maintaining Agent workflows over time.</span></p>
+      <p><span class="zh">为需要长期维护、复查并交接 Agent 工作流的人而做。</span><span class="en">Built for people who maintain, review, and hand off Agent workflows over time.</span></p>
       <div>
         <a href="https://github.com/huiyonghkw/hekouwang-harness-check-skill">GitHub ↗</a>
         <a href="guide/index.html"><span class="zh">完整 Guide</span><span class="en">Guide</span> ↗</a>

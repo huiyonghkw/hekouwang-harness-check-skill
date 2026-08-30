@@ -1,155 +1,117 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
-  <title id="title">Harness 检查器 Skill 流程图</title>
-  <desc id="desc">从用户请求开始，选择验证模式，调用唯一 verify.sh 入口，运行检查层，生成自动化报告，补充宿主烟测和人工验收，最后给出交付判定。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1460" viewBox="0 0 1200 1460" role="img" aria-labelledby="title desc">
+  <title id="title">Harness Check 标准时序图</title>
+  <desc id="desc">以时间向下的标准时序图：用户和 Agent 发起检查，Harness Check 调用 verify.sh，执行检查层并分别收集自动化证据与人工边界，最后给出交付判定。</desc>
   <defs>
-    <linearGradient id="header" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#14283f"/>
-      <stop offset="1" stop-color="#1d4f63"/>
-    </linearGradient>
-    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#e4f8f3"/>
-      <stop offset="1" stop-color="#cceee5"/>
-    </linearGradient>
-    <linearGradient id="amber" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#fff5df"/>
-      <stop offset="1" stop-color="#f8e4b5"/>
-    </linearGradient>
-    <linearGradient id="rose" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#fff0ef"/>
-      <stop offset="1" stop-color="#f5d2cf"/>
-    </linearGradient>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
-      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#132b3d" flood-opacity=".12"/>
-    </filter>
-    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
-      <path d="M0,0 L12,6 L0,12 Z" fill="#6f8996"/>
-    </marker>
-    <marker id="arrow-teal" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
-      <path d="M0,0 L12,6 L0,12 Z" fill="#159b85"/>
-    </marker>
+    <radialGradient id="blue" cx="4%" cy="2%" r="70%"><stop offset="0" stop-color="#a8c9ff" stop-opacity=".48"/><stop offset=".72" stop-color="#eef1f8" stop-opacity="0"/></radialGradient>
+    <radialGradient id="iris" cx="97%" cy="20%" r="68%"><stop offset="0" stop-color="#dfc8ff" stop-opacity=".45"/><stop offset=".72" stop-color="#eef1f8" stop-opacity="0"/></radialGradient>
+    <radialGradient id="mint" cx="10%" cy="94%" r="65%"><stop offset="0" stop-color="#c1f1df" stop-opacity=".38"/><stop offset=".72" stop-color="#eef1f8" stop-opacity="0"/></radialGradient>
+    <radialGradient id="peach" cx="95%" cy="92%" r="65%"><stop offset="0" stop-color="#ffd8c9" stop-opacity=".34"/><stop offset=".72" stop-color="#eef1f8" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#1f2687" flood-opacity=".12"/></filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#52718f"/></marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#007aff"/></marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#ff6259"/></marker>
     <style>
-      .font { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", Arial, sans-serif; }
-      .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
-      .title { fill: #ffffff; font-size: 34px; font-weight: 800; letter-spacing: .02em; }
-      .subtitle { fill: #b9d8df; font-size: 16px; font-weight: 500; }
-      .card-title { fill: #173043; font-size: 21px; font-weight: 800; }
-      .card-copy { fill: #4e6673; font-size: 16px; font-weight: 500; }
-      .small { fill: #718894; font-size: 13px; font-weight: 600; }
-      .small-light { fill: #d9edf0; font-size: 13px; font-weight: 600; }
-      .mode { fill: #214d5c; font-size: 16px; font-weight: 800; }
-      .suite { fill: #244657; font-size: 17px; font-weight: 800; }
-      .suite-copy { fill: #5e7782; font-size: 14px; font-weight: 500; }
-      .pill { fill: #ffffff; stroke: #c6d9dc; stroke-width: 1; }
-      .pill-text { fill: #3e6570; font-size: 13px; font-weight: 700; }
+      @font-face{font-family:"Alimama ShuHeiTi";src:url("fonts/AlimamaShuHeiTi-Bold.woff2") format("woff2");font-weight:900}
+      @font-face{font-family:"Noto Sans SC";src:url("fonts/NotoSansSC-Variable-FULL.woff2") format("woff2");font-weight:100 900}
+      @font-face{font-family:"Google Sans Text";src:url("fonts/GoogleSansText-Regular.ttf") format("truetype");font-weight:400}
+      @font-face{font-family:"Google Sans Text";src:url("fonts/GoogleSansText-Medium.ttf") format("truetype");font-weight:500}
+      @font-face{font-family:"Google Sans";src:url("fonts/GoogleSans-Finance-Latin.woff2") format("woff2");font-weight:100 900}
+      .cover{font:900 40px "Alimama ShuHeiTi","Noto Sans SC",sans-serif;letter-spacing:-.05em;fill:rgba(28,28,30,.92)}
+      .copy{font:500 15px "Noto Sans SC",sans-serif;fill:rgba(60,60,67,.72)}
+      .small{font:500 12px "Google Sans Text","Noto Sans SC",sans-serif;letter-spacing:.05em;fill:rgba(60,60,67,.52)}
+      .eyebrow{font:500 13px "Google Sans Text","Noto Sans SC",sans-serif;letter-spacing:.04em;fill:#007aff}
+      .participant{font:800 17px "Noto Sans SC",sans-serif;letter-spacing:-.02em;fill:rgba(28,28,30,.92)}
+      .participant-en{font:500 11px "Google Sans Text","Noto Sans SC",sans-serif;letter-spacing:.06em;fill:rgba(60,60,67,.52)}
+      .message{font:500 14px "Noto Sans SC",sans-serif;fill:rgba(40,44,54,.82)}
+      .message-en{font:500 11px "Google Sans Text","Noto Sans SC",sans-serif;fill:rgba(60,60,67,.48)}
+      .note{font:500 12px "Noto Sans SC",sans-serif;fill:rgba(60,60,67,.62)}
+      .decision{font:900 25px "Alimama ShuHeiTi","Noto Sans SC",sans-serif;letter-spacing:-.04em;fill:rgba(28,28,30,.92)}
+      .danger{font:500 12px "Noto Sans SC",sans-serif;fill:#e45d56}
     </style>
   </defs>
 
-  <rect width="1600" height="980" fill="#f7fafb"/>
-  <rect x="48" y="38" width="1504" height="108" rx="24" fill="url(#header)" filter="url(#shadow)"/>
-  <text x="88" y="86" class="font title">Harness Check Skill</text>
-  <text x="88" y="117" class="font subtitle">证据驱动的检查编排：运行什么、证明什么、还缺什么</text>
-  <text x="1468" y="95" text-anchor="end" class="mono small-light">WORKING-TREE · STAGED · CI</text>
+  <rect width="1200" height="1460" rx="30" fill="#eef1f8"/>
+  <rect width="1200" height="1460" rx="30" fill="url(#blue)"/><rect width="1200" height="1460" rx="30" fill="url(#iris)"/><rect width="1200" height="1460" rx="30" fill="url(#mint)"/><rect width="1200" height="1460" rx="30" fill="url(#peach)"/>
 
+  <!-- Title -->
+  <g filter="url(#shadow)"><rect x="52" y="46" width="1096" height="138" rx="26" fill="rgba(255,255,255,.72)" stroke="rgba(255,255,255,.94)"/></g>
+  <path d="M84 84H120" stroke="#007aff" stroke-width="2"/><text x="135" y="89" class="small">HARNESS CHECK · SEQUENCE</text>
+  <text x="84" y="136" class="cover">一次检查，谁先做什么，结果怎样回来。</text>
+  <text x="84" y="163" class="copy">时间从上往下；每条横线都是一次真实调用或一次明确交接。</text>
+
+  <!-- Participants -->
+  <text x="70" y="225" class="eyebrow">参与者 / PARTICIPANTS</text>
   <g filter="url(#shadow)">
-    <rect x="48" y="190" width="292" height="126" rx="20" fill="#ffffff" stroke="#d7e3e6"/>
-    <rect x="370" y="190" width="292" height="126" rx="20" fill="#ffffff" stroke="#d7e3e6"/>
-    <rect x="692" y="190" width="292" height="126" rx="20" fill="url(#amber)" stroke="#edd49b"/>
-    <rect x="1014" y="190" width="538" height="126" rx="20" fill="url(#teal)" stroke="#a7dccc"/>
+    <rect x="52" y="244" width="188" height="82" rx="18" fill="rgba(255,255,255,.72)" stroke="rgba(255,255,255,.92)"/>
+    <rect x="282" y="244" width="188" height="82" rx="18" fill="rgba(235,246,255,.77)" stroke="rgba(255,255,255,.92)"/>
+    <rect x="512" y="244" width="188" height="82" rx="18" fill="rgba(245,238,255,.77)" stroke="rgba(255,255,255,.92)"/>
+    <rect x="742" y="244" width="188" height="82" rx="18" fill="rgba(255,255,255,.65)" stroke="rgba(255,255,255,.88)"/>
+    <rect x="972" y="244" width="176" height="82" rx="18" fill="rgba(255,246,222,.77)" stroke="rgba(255,255,255,.92)"/>
   </g>
-  <text x="76" y="225" class="font small">01 · REQUEST</text>
-  <text x="76" y="257" class="font card-title">用户请求检查</text>
-  <text x="76" y="284" class="font card-copy">体检 · 回归 · 验收 · 诊断</text>
-  <text x="398" y="225" class="font small">02 · ROOT</text>
-  <text x="398" y="257" class="font card-title">定位 Harness 真源</text>
-  <text x="398" y="284" class="mono card-copy">.harness/scripts/verify.sh</text>
-  <text x="720" y="225" class="font small">03 · MODE</text>
-  <text x="720" y="257" class="font card-title">选择验证模式</text>
-  <text x="720" y="284" class="font mode">本地 · 暂存区 · CI</text>
-  <text x="1042" y="225" class="font small">04 · CANONICAL ENTRY</text>
-  <text x="1042" y="257" class="font card-title">唯一入口：verify.sh</text>
-  <text x="1042" y="284" class="font card-copy">直接执行，保留退出码、stderr 和完整检查标签</text>
+  <text x="146" y="280" text-anchor="middle" class="participant">用户 / Agent</text><text x="146" y="303" text-anchor="middle" class="participant-en">REQUESTER</text>
+  <text x="376" y="280" text-anchor="middle" class="participant">Harness Check</text><text x="376" y="303" text-anchor="middle" class="participant-en">VERIFIER</text>
+  <text x="606" y="280" text-anchor="middle" class="participant">verify.sh</text><text x="606" y="303" text-anchor="middle" class="participant-en">CANONICAL ENTRY</text>
+  <text x="836" y="280" text-anchor="middle" class="participant">检查层</text><text x="836" y="303" text-anchor="middle" class="participant-en">CHECK SUITE</text>
+  <text x="1060" y="280" text-anchor="middle" class="participant">人工 / 交付</text><text x="1060" y="303" text-anchor="middle" class="participant-en">HUMAN BOUNDARY</text>
 
-  <path d="M340 253 H360" stroke="#6f8996" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
-  <path d="M662 253 H682" stroke="#6f8996" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
-  <path d="M984 253 H1004" stroke="#6f8996" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <!-- Lifelines -->
+  <path d="M146 326V1287M376 326V1287M606 326V1287M836 326V1287M1060 326V1287" fill="none" stroke="rgba(82,113,143,.40)" stroke-width="2" stroke-dasharray="6 8"/>
 
-  <text x="48" y="364" class="font small">05 · CHECK LAYERS</text>
-  <path d="M1283 316 V350 H215 V392" stroke="#6f8996" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-  <path d="M1283 316 V350 H602 V392" stroke="#6f8996" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-  <path d="M1283 316 V350 H989 V392" stroke="#6f8996" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-  <path d="M1283 316 V350 H1376 V392" stroke="#6f8996" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+  <!-- Activation bars -->
+  <rect x="365" y="398" width="22" height="712" rx="11" fill="rgba(0,122,255,.16)" stroke="rgba(0,122,255,.30)"/>
+  <rect x="595" y="470" width="22" height="425" rx="11" fill="rgba(175,82,222,.15)" stroke="rgba(175,82,222,.30)"/>
+  <rect x="825" y="546" width="22" height="260" rx="11" fill="rgba(52,199,89,.15)" stroke="rgba(52,199,89,.30)"/>
 
-  <g filter="url(#shadow)">
-    <rect x="48" y="392" width="334" height="164" rx="20" fill="#ffffff" stroke="#d7e3e6"/>
-    <rect x="404" y="392" width="334" height="164" rx="20" fill="#ffffff" stroke="#d7e3e6"/>
-    <rect x="760" y="392" width="334" height="164" rx="20" fill="#ffffff" stroke="#d7e3e6"/>
-    <rect x="1116" y="392" width="436" height="164" rx="20" fill="#ffffff" stroke="#d7e3e6"/>
-  </g>
-  <text x="76" y="430" class="font suite">结构与文档</text>
-  <text x="76" y="459" class="font suite-copy">规则真源 · Skill · Profile</text>
-  <text x="76" y="482" class="font suite-copy">Hook 配置 · 文档链接 · 生成物</text>
-  <rect x="76" y="508" width="126" height="27" rx="14" class="pill"/>
-  <text x="139" y="527" text-anchor="middle" class="font pill-text">可解析可追踪</text>
+  <!-- Messages, time moves downward -->
+  <text x="70" y="362" class="small">T01 · 发起</text>
+  <path d="M146 378H365" fill="none" stroke="#52718f" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="255" y="369" text-anchor="middle" class="message">我要检查当前 Harness</text>
 
-  <text x="432" y="430" class="font suite">治理与证据</text>
-  <text x="432" y="459" class="font suite-copy">Runtime Governance · Contract</text>
-  <text x="432" y="482" class="font suite-copy">SHA-256 · Evaluator · 失败反例</text>
-  <rect x="432" y="508" width="126" height="27" rx="14" class="pill"/>
-  <text x="495" y="527" text-anchor="middle" class="font pill-text">不接受自报完成</text>
+  <text x="70" y="434" class="small">T02 · 定位与选模式</text>
+  <path d="M387 450H595" fill="none" stroke="#007aff" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <text x="491" y="441" text-anchor="middle" class="message">找到仓库真源，选择 working-tree / staged / CI</text>
 
-  <text x="788" y="430" class="font suite">安全与状态</text>
-  <text x="788" y="459" class="font suite-copy">Safety Gate · Episode</text>
-  <text x="788" y="482" class="font suite-copy">allow / ask / deny · 状态链</text>
-  <rect x="788" y="508" width="126" height="27" rx="14" class="pill"/>
-  <text x="851" y="527" text-anchor="middle" class="font pill-text">失败保持可见</text>
+  <text x="70" y="506" class="small">T03 · 调用唯一入口</text>
+  <path d="M617 522H825" fill="none" stroke="#007aff" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <text x="721" y="513" text-anchor="middle" class="message">执行结构、治理、安全、宿主检查</text>
 
-  <text x="1144" y="430" class="font suite">宿主与观测</text>
-  <text x="1144" y="459" class="font suite-copy">四端适配 · 脱敏事件 · 趋势</text>
-  <text x="1144" y="482" class="font suite-copy">本地 Memory · CI fixture · 链接校验</text>
-  <rect x="1144" y="508" width="126" height="27" rx="14" class="pill"/>
-  <text x="1207" y="527" text-anchor="middle" class="font pill-text">不夸大覆盖范围</text>
+  <text x="70" y="578" class="small">T04 · 返回原始结果</text>
+  <path d="M825 594H617" fill="none" stroke="#52718f" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="721" y="585" text-anchor="middle" class="message">退出码 · stderr · 失败标签 · 可复跑命令</text>
 
-  <path d="M215 556 V598 H388 V634" stroke="#6f8996" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-  <path d="M571 556 V598 H571 V634" stroke="#6f8996" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-  <path d="M927 556 V598 H754 V634" stroke="#6f8996" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
-  <path d="M1334 556 V598 H754 V634" stroke="#6f8996" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="70" y="650" class="small">T05 · 汇总自动化证据</text>
+  <path d="M595 666H387" fill="none" stroke="#007aff" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <text x="491" y="657" text-anchor="middle" class="message">自动化通过 / 失败，保留复现路径</text>
 
-  <g filter="url(#shadow)">
-    <rect x="48" y="634" width="646" height="184" rx="20" fill="url(#teal)" stroke="#a7dccc"/>
-    <rect x="716" y="634" width="394" height="184" rx="20" fill="url(#amber)" stroke="#edd49b"/>
-    <rect x="1132" y="634" width="420" height="184" rx="20" fill="#ffffff" stroke="#d7e3e6"/>
-  </g>
-  <text x="78" y="674" class="font small">06 · AUTOMATED EVIDENCE</text>
-  <text x="78" y="708" class="font card-title">自动化报告</text>
-  <text x="78" y="738" class="font card-copy">退出码 · 通过项 · 失败项 · 警告 · 原始复现命令</text>
-  <text x="78" y="766" class="font card-copy">Runtime Governance 数量只从实际日志读取</text>
-  <rect x="78" y="782" width="128" height="27" rx="14" class="pill"/>
-  <text x="142" y="801" text-anchor="middle" class="font pill-text">自动化证据</text>
+  <text x="70" y="722" class="small">T06 · 独立复查</text>
+  <path d="M387 738H825" fill="none" stroke="#007aff" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <text x="606" y="729" text-anchor="middle" class="message">Evaluator 按任务合同重新检查</text>
 
-  <text x="746" y="674" class="font small">07 · HUMAN BOUNDARY</text>
-  <text x="746" y="708" class="font card-title">宿主烟测与人工验收</text>
-  <text x="746" y="738" class="font card-copy">Hook 真实触发 · 视觉 · 事实 · MCP</text>
-  <text x="746" y="766" class="font card-copy">不能用 headless 结果代替</text>
-  <rect x="746" y="782" width="128" height="27" rx="14" class="pill"/>
-  <text x="810" y="801" text-anchor="middle" class="font pill-text">人工证据</text>
+  <text x="70" y="794" class="small">T07 · 复查结论</text>
+  <path d="M847 810H387" fill="none" stroke="#52718f" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="617" y="801" text-anchor="middle" class="message">确认遗漏，标出自动化没有覆盖的部分</text>
 
-  <text x="1162" y="674" class="font small">08 · DECISION</text>
-  <text x="1162" y="708" class="font card-title">交付判定</text>
-  <text x="1162" y="742" class="font card-copy">自动化失败 → 定位并重跑</text>
-  <text x="1162" y="768" class="font card-copy">自动化通过 + 人工待补 → 不宣称完成</text>
-  <text x="1162" y="794" class="font card-copy">两者齐备 → 可交付</text>
+  <text x="70" y="866" class="small">T08 · 人工边界</text>
+  <path d="M387 882H1049" fill="none" stroke="#ff9500" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="718" y="873" text-anchor="middle" class="message">需要真实宿主烟测、视觉或发布验收吗？</text>
 
-  <path d="M694 726 H706" stroke="#159b85" stroke-width="3" fill="none" marker-end="url(#arrow-teal)"/>
-  <path d="M1110 726 H1122" stroke="#159b85" stroke-width="3" fill="none" marker-end="url(#arrow-teal)"/>
-  <path d="M1132 838 C1000 900 650 900 330 838 C210 814 128 784 128 738" stroke="#d07b72" stroke-width="2" stroke-dasharray="8 8" fill="none" marker-end="url(#arrow)"/>
-  <text x="510" y="925" class="font small">失败不是静默终点：保留证据 → 指向单项测试 → 修复后重新执行完整入口</text>
+  <text x="70" y="938" class="small">T09 · 记录边界</text>
+  <path d="M1049 954H387" fill="none" stroke="#52718f" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="718" y="945" text-anchor="middle" class="message">人工证据 / 待补项，不把未做写成通过</text>
 
-  <line x1="48" y1="946" x2="1552" y2="946" stroke="#d6e2e5" stroke-width="1"/>
-  <circle cx="76" cy="964" r="7" fill="#159b85"/>
-  <text x="92" y="969" class="font small">自动化证据</text>
-  <circle cx="220" cy="964" r="7" fill="#e0a83e"/>
-  <text x="236" y="969" class="font small">人工 / 宿主证据</text>
-  <circle cx="394" cy="964" r="7" fill="#d07b72"/>
-  <text x="410" y="969" class="font small">失败 / 待补</text>
-  <text x="1522" y="969" text-anchor="end" class="mono small">hekouwang-harness-check-skill</text>
+  <text x="70" y="1010" class="small">T10 · 给出判定</text>
+  <path d="M387 1026H146" fill="none" stroke="#007aff" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <text x="266" y="1017" text-anchor="middle" class="message">可交付 / 待补 / 阻断 + 下一步</text>
+
+  <!-- Decision readout -->
+  <g filter="url(#shadow)"><rect x="146" y="1068" width="920" height="137" rx="25" fill="rgba(255,255,255,.76)" stroke="rgba(255,255,255,.94)"/></g>
+  <text x="182" y="1102" class="small">OUTPUT · HANDOFF DECISION</text>
+  <text x="182" y="1147" class="decision">结果不是一句“完成”，而是一份可追问的交接。</text>
+  <text x="182" y="1177" class="copy">自动化证据、人工边界和下一步动作分开写清楚。</text>
+
+  <!-- Failure branch -->
+  <path d="M387 1232H1049V1108" fill="none" stroke="#ff6259" stroke-width="2.5" stroke-dasharray="8 9" stroke-linecap="round" marker-end="url(#arrow-red)"/>
+  <g transform="translate(438 1214)"><rect width="440" height="37" rx="18.5" fill="rgba(255,245,244,.80)" stroke="rgba(255,107,97,.35)"/><text x="220" y="24" text-anchor="middle" class="danger">任一失败：记录根因 → 加控制 → 加反例 → 重跑</text></g>
+  <text x="600" y="1340" text-anchor="middle" class="note">标准时序图：上方是参与者，中间是调用，下方是结论与回退。</text>
+  <text x="600" y="1380" text-anchor="middle" class="small">Harness Check · evidence before “done”</text>
 </svg>
