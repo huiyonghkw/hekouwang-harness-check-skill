@@ -24,7 +24,8 @@ description: 当用户要求检查、体检、回归、验收、解释或诊断�
 | --- | --- |
 | 检查当前本地工作区 | `bash .harness/scripts/verify.sh --working-tree` |
 | 检查准备提交的治理改动 | `bash .harness/scripts/verify.sh --staged` |
-| 模拟 CI、去除本机 Skill/Memory 依赖 | `bash .harness/scripts/verify.sh --ci` |
+| 本机 CI 契约/fixture 回归 | `bash .harness/scripts/verify.sh --ci` |
+| 复现远端 CI、排除本机 Skill/宿主软链 | `bash .harness/scripts/verify.sh --ci-hermetic` |
 | 只诊断结构、链接和治理契约 | `bash .harness/scripts/harness-check.sh --local` 或 `--ci` |
 
 不要默认只跑 `harness-check.sh` 就宣称 Harness 完成；完整验收应优先使用 `verify.sh`。
@@ -34,7 +35,7 @@ description: 当用户要求检查、体检、回归、验收、解释或诊断�
 1. 直接运行命令并保留退出码。不要用 `| head`、`|| true` 或吞掉 stderr 的方式判断成功。
 2. 需要保存长日志时写入临时目录，完整读取失败段；不要把临时日志当成任务证据提交。
 3. 先报告自动化结果，再报告人工检查；两者不能合并成一个“全部通过”。
-4. 从实际输出读取检查数量。基础闭环曾输出本地 `722`、CI `165` 项；纳入本 Skill 的组件和路由断言后当前为本地 `728`、CI `171` 项。这些都不是永久硬编码的总分；数量变化时如实记录，不自行补算或夸大。
+4. 从实际输出读取检查数量。`--ci` 是本机 fixture 回归，只有 `--ci-hermetic` 才能证明干净 clone 的 CI 入口可复现。基础闭环曾输出本地 `722`、CI `165` 项；这些都不是永久硬编码的总分；数量变化时如实记录，不自行补算或夸大。
 5. `⚠️` 是警告，不等于 `✅`；只要任一应通过检查返回非零，就判定自动检查失败。
 6. 检查失败时先指出失败命令、失败项目和可复现路径。只有用户明确要求修复时才改文件；改前遵守 `AGENTS.md` 的范围说明和确认规则。
 7. 不使用 `--no-verify` 绕过 Hook，不为让检查通过而修改计数、删除反例、关闭治理项或把宿主烟测写成自动化证据。
@@ -43,7 +44,7 @@ description: 当用户要求检查、体检、回归、验收、解释或诊断�
 
 至少输出以下五部分：
 
-1. **模式与范围**：`working-tree`、`staged` 或 `ci`，以及检查到的仓库/提交。
+1. **模式与范围**：`working-tree`、`staged`、`ci` 或 `ci-hermetic`，以及检查到的仓库/提交。
 2. **自动化结论**：命令退出状态；列出通过、失败和警告。若输出包含 Runtime Governance 数量，注明是本地还是 CI。
 3. **失败定位**：保留原始检查标签和复现命令，不把“工具没输出”解释成通过。
 4. **人工/宿主边界**：说明是否实际触发了 Claude Code、Cursor、CodeBuddy、Codex 的 Hook；是否检查了真实平台视觉、浏览器或 MCP 外部副作用。
