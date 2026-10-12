@@ -370,6 +370,8 @@ bash .harness/scripts/sync-agent-adapters.sh --fix
 
 ## 维护与贡献
 
+首次在新机器或新克隆中运行 `bash scripts/install-hooks.sh`。此后 `git push` 会对将要推送的 Skill 快照运行本仓单测和 Skill Doctor；Doctor 缺失或检查失败会阻止推送。安装配置只作用于当前克隆。
+
 新增或修改 Harness 能力时，按以下顺序处理：
 
 1. 修改唯一真源：脚本、契约或宿主适配；

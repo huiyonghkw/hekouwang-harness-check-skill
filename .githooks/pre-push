@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+DOCTOR_DIR=${HEKOUWANG_SKILL_DOCTOR_DIR:-"${HOME:-}/.claude/skills/hekouwang-claude-skill-doctor-skill"}
+
+if [ ! -f "$DOCTOR_DIR/check.py" ]; then
+  echo "FAIL: 找不到 Skill Doctor：$DOCTOR_DIR/check.py" >&2
+  exit 1
+fi
+
+SNAPSHOT_BASE=$(mktemp -d "${TMPDIR:-/tmp}/hekouwang-skill-pre-push.XXXXXX")
+trap 'rm -rf "$SNAPSHOT_BASE"' EXIT
+
+count=0
+while read -r local_ref local_sha remote_ref remote_sha; do
+  # 删除远端 ref 不携带 Skill 快照。
+  if [[ "$local_sha" =~ ^0+$ ]]; then
+    continue
+  fi
+
+  count=$((count + 1))
+  snapshot="$SNAPSHOT_BASE/$count/hekouwang-harness-check-skill"
+  mkdir -p "$snapshot"
+  git -C "$ROOT" archive --format=tar "$local_sha" | tar -xf - -C "$snapshot"
+
+  echo "检查推送快照：$local_ref ($local_sha)"
+  python3 -m unittest discover -s "$snapshot/tests" -p 'test_*.py'
+  python3 "$DOCTOR_DIR/check.py" "$snapshot"
+done
