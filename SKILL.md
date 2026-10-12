@@ -7,7 +7,7 @@ summary: 证据驱动的 Agent Harness 独立验收器：检查本地、暂存�
 tags: [harness, agent, governance, verification, audit]
 license: MIT
 homepage: https://huiyonghkw.github.io/hekouwang-harness-check-skill/
-description: 当用户要求检查、体检、回归、验收、解释或诊断会勇禾口王内容工作流 Harness，或维护、移植、打包、开源这个 Harness 检查器 Skill 时使用。统一调用仓库现有的 verify.sh、harness-check、Runtime Governance、Hook、Task Contract、Safety Gate、Episode、可观测性和失败台账检查，并分别报告本地、暂存区、CI 自动化结果与真实宿主烟测边界。
+description: 当用户要求检查、体检、回归、验收、解释或诊断会勇禾口王内容工作流 Harness，或维护、移植、打包、开源这个 Harness 检查器 Skill 时使用。统一调用 verify.sh 及治理、Hook、安全门、Episode 等检查，分别报告本地、暂存区、CI 与真实宿主边界。具体 EP 的文章、实验选型和渠道交付预检由仓内 hekouwang-precheck 负责。
 ---
 
 # 会勇禾口王 Harness 检查器

@@ -2,6 +2,8 @@
 
 > 面向 Agent Harness 的证据驱动检查器 Skill：选择正确的验证模式，调用唯一真源，保留退出码和原始证据，并把自动化通过、真实宿主烟测和人工验收明确分开。
 
+本 Skill 检查完整 Harness 的治理、Hook、CI 契约与真实宿主边界；具体 EP 的文章母版、实验选型和渠道交付阶段预检由仓内 `hekouwang-precheck` 负责。两者分别回答“工作流是否可靠”和“这一期能否交付”。
+
 ![Harness 检查器流程图](./assets/harness-check-flow.svg)
 
 这是一个独立发布的 Agent Skill 源仓库。它不重新发明测试框架，也不把“检查脚本运行过”包装成“任务已经完成”；它把目标 Harness 已有的检查能力编排成 Agent 可以稳定执行、解释和交接的工作流。
