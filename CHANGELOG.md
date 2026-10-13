@@ -1,5 +1,11 @@
 # Changelog
 
+## 未发布 · 2026-10-12 · Skill Doctor 自检误报修复
+
+- 保留机器专属路径扫描能力，同时拆分检查器与 CI 中的检测字面量，避免 Doctor 把检测规则本身误判为硬编码路径。
+- 新增正反例回归，证明可移植文档放行、真实机器路径仍会命中。
+- 将跨宿主发布信息收进标准 `metadata`，保留信息的同时通过 Codex Skill 基础契约校验。
+
 本文件记录独立 `hekouwang-harness-check-skill` Skill 的发布变化。
 
 ## Unreleased

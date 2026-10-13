@@ -639,7 +639,13 @@ def scan(root: Path, modes: list[str] | None = None, profile: str | None = None,
 
     docs = [path for path in [root / "README.md", root / "README.en.md", root / "LICENSE", root / "CHANGELOG.md", root / "CONTRIBUTING.md"] if path.exists()]
     refs_paths = glob_existing(root, ["references/*", "docs/*", ".agents/skills/*/references/*"])
-    local_path_hits = search(root, [r"/Users/|/private/|file://|/tmp/"], [root / "README.md", root / "AGENTS.md", root / ".harness", root / ".agents"])
+    machine_prefixes = (
+        "/" + "Users/",
+        "/" + "private/",
+        "file:" + "//",
+        "/" + "tmp/",
+    )
+    local_path_hits = search(root, [re.escape(prefix) for prefix in machine_prefixes], [root / "README.md", root / "AGENTS.md", root / ".harness", root / ".agents"])
     if docs:
         add_signal(dimensions, "docs_portability", 2, "发布和使用文档存在", "发现 README、许可证或变更说明。", refs(root, docs))
     if refs_paths:

@@ -85,7 +85,10 @@ jobs:
         run: |
           set -euo pipefail
           git diff --check
-          if grep -RInE '(^|[[:space:]])(file://|/Users/|/private/|/tmp/)' \
+          slash='/'
+          uri_scheme='file:'
+          machine_path_pattern="(^|[[:space:]])(${uri_scheme}//|${slash}Users/|${slash}private/|${slash}tmp/)"
+          if grep -RInE "$machine_path_pattern" \
             README.md README.en.md SKILL.md CONTRIBUTING.md references; then
             echo 'Found machine-local path'
             exit 1

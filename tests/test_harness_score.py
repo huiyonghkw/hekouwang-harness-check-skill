@@ -126,6 +126,21 @@ jobs:
             self.assertIn("package.json:scripts.check:ci", report["verification"]["entrypoints"])
             self.assertNotIn("no_verification_entrypoint", {item["id"] for item in report["score"]["caps"]})
 
+    def test_machine_path_detector_distinguishes_portable_and_local_docs(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.strong_fixture(root)
+            portable = harness_score.scan(root)
+            portable_dimension = next(item for item in portable["dimensions"] if item["id"] == "docs_portability")
+            portable_titles = {item["title"] for item in portable_dimension["signals"]}
+            self.assertIn("未发现机器专属路径", portable_titles)
+
+            self.write(root, "README.md", "Local-only example: /" + "Users/example/project\n")
+            local = harness_score.scan(root)
+            local_dimension = next(item for item in local["dimensions"] if item["id"] == "docs_portability")
+            local_titles = {item["title"] for item in local_dimension["signals"]}
+            self.assertIn("发现机器专属路径", local_titles)
+
     def test_live_terminal_mode_keeps_progress_and_colored_verdict_separate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
